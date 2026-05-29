@@ -1,0 +1,146 @@
+{
+  "components": [
+    {
+      "label": "Name",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1xo6b55",
+        "columns": null
+      },
+      "id": "Field_04mnv2c",
+      "key": "name",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Age",
+      "type": "number",
+      "layout": {
+        "row": "Row_1bekejq",
+        "columns": null
+      },
+      "id": "Field_04dkudx",
+      "key": "age",
+      "validate": {
+        "required": false
+      }
+    },
+    {
+      "label": "Gender",
+      "values": [
+        {
+          "label": "Male",
+          "value": "male"
+        },
+        {
+          "label": "Female",
+          "value": "female"
+        }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_1oinif0",
+        "columns": null
+      },
+      "id": "Field_0wq8wh8",
+      "key": "gender",
+      "defaultValue": "male"
+    },
+    {
+      "label": "Email",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1a9ipzo",
+        "columns": null
+      },
+      "id": "Field_1raa8wc",
+      "key": "email"
+    },
+    {
+      "label": "Mobile",
+      "type": "number",
+      "layout": {
+        "row": "Row_0c5htxt",
+        "columns": null
+      },
+      "id": "Field_08zjbem",
+      "key": "mobile"
+    },
+    {
+      "label": "Address",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_0epp9et",
+        "columns": null
+      },
+      "id": "Field_0y4g3i4",
+      "key": "address"
+    },
+    {
+      "label": "Country",
+      "values": [
+        {
+          "label": "India",
+          "value": "india"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_12vpr4n",
+        "columns": null
+      },
+      "id": "Field_0cvpfaf",
+      "key": "country"
+    },
+    {
+      "label": "State",
+      "values": [
+        {
+          "label": "Gujarat",
+          "value": "gujarat"
+        },
+        {
+          "label": "Maharashtra",
+          "value": "maharashtra"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_1funkh2",
+        "columns": null
+      },
+      "id": "Field_02w4dzn",
+      "key": "state"
+    },
+    {
+      "label": "City",
+      "values": [
+        {
+          "label": "Ahmedabad",
+          "value": "ahmedabad"
+        },
+        {
+          "label": "Mumbai",
+          "value": "mumbai"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_0o46n4u",
+        "columns": null
+      },
+      "id": "Field_12dckj3",
+      "key": "city"
+    }
+  ],
+  "type": "default",
+  "id": "Form_0l7pypq",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}
