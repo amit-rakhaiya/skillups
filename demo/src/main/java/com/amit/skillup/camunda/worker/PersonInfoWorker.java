@@ -28,7 +28,7 @@ public class PersonInfoWorker {
                 .age(variables.get("age") != null ? ((Number) variables.get("age")).intValue() : 0)
                 .gender((String) variables.get("gender"))
                 .email((String) variables.get("email"))
-                .mobile((String) variables.get("mobile"))
+                .mobile(variables.get("mobile") != null ? String.valueOf(variables.get("mobile")) : null)
                 .address((String) variables.get("address"))
                 .city((String) variables.get("city"))
                 .state((String) variables.get("state"))
