@@ -1,0 +1,135 @@
+{
+  "components": [
+    {
+      "label": "Name",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1xo6b55",
+        "columns": null
+      },
+      "id": "Field_mr_name",
+      "key": "name",
+      "readonly": true
+    },
+    {
+      "label": "Age",
+      "type": "number",
+      "layout": {
+        "row": "Row_1bekejq",
+        "columns": null
+      },
+      "id": "Field_mr_age",
+      "key": "age",
+      "readonly": true
+    },
+    {
+      "label": "Gender",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1oinif0",
+        "columns": null
+      },
+      "id": "Field_mr_gender",
+      "key": "gender",
+      "readonly": true
+    },
+    {
+      "label": "Email",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1a9ipzo",
+        "columns": null
+      },
+      "id": "Field_mr_email",
+      "key": "email",
+      "readonly": true
+    },
+    {
+      "label": "Mobile",
+      "type": "number",
+      "layout": {
+        "row": "Row_0c5htxt",
+        "columns": null
+      },
+      "id": "Field_mr_mobile",
+      "key": "mobile",
+      "readonly": true
+    },
+    {
+      "label": "Address",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_0epp9et",
+        "columns": null
+      },
+      "id": "Field_mr_address",
+      "key": "address",
+      "readonly": true
+    },
+    {
+      "label": "Country",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_12vpr4n",
+        "columns": null
+      },
+      "id": "Field_mr_country",
+      "key": "country",
+      "readonly": true
+    },
+    {
+      "label": "State",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1funkh2",
+        "columns": null
+      },
+      "id": "Field_mr_state",
+      "key": "state",
+      "readonly": true
+    },
+    {
+      "label": "City",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0o46n4u",
+        "columns": null
+      },
+      "id": "Field_mr_city",
+      "key": "city",
+      "readonly": true
+    },
+    {
+      "label": "Approval Decision",
+      "values": [
+        {
+          "label": "Approved",
+          "value": "approved"
+        },
+        {
+          "label": "Rejected",
+          "value": "rejected"
+        }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_approval",
+        "columns": null
+      },
+      "id": "Field_approval",
+      "key": "approval",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "Form_manager_review",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}
