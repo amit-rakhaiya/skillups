@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apache Kafka Interview Prep</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(135deg, #fef3f2 0%, #fef0e8 100%);
+    color: #2d3748;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, #c53030 0%, #7b1d1d 100%);
+    color: white;
+    padding: 40px 50px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(197, 48, 48, 0.25);
+    margin-bottom: 30px;
+  }
+  .header h1 { font-size: 2.4em; margin-bottom: 8px; font-weight: 700; }
+  .header p { font-size: 1.1em; opacity: 0.95; }
+  .toc {
+    background: white;
+    padding: 25px 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    margin-bottom: 30px;
+    border-left: 5px solid #c53030;
+  }
+  .toc h2 { color: #9b2c2c; margin-bottom: 15px; font-size: 1.3em; }
+  .toc ol { padding-left: 25px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: #2c5282; text-decoration: none; font-weight: 500; }
+  .toc a:hover { color: #c53030; text-decoration: underline; }
+  .question-card {
+    background: white;
+    border-radius: 16px;
+    padding: 35px 40px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border-top: 6px solid #c53030;
+  }
+  .q-number {
+    display: inline-block;
+    background: #c53030;
+    color: white;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .q-title {
+    font-size: 1.7em;
+    color: #1a202c;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+  .section { margin: 28px 0; }
+  .section-heading {
+    font-size: 1.15em;
+    color: #9b2c2c;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .quote-box {
+    background: linear-gradient(135deg, #fef5f5 0%, #fef0e8 100%);
+    border-left: 4px solid #c53030;
+    padding: 18px 22px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-style: italic;
+    color: #2d3748;
+  }
+  .quote-box strong { color: #9b2c2c; font-style: normal; }
+  .one-liner {
+    background: #fffbea;
+    border: 2px dashed #f6ad55;
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    text-align: center;
+    font-size: 1.05em;
+    color: #744210;
+  }
+  .feature-list { display: flex; flex-direction: column; gap: 14px; margin-top: 15px; }
+  .feature-item {
+    background: #fef5f5;
+    border-radius: 10px;
+    padding: 18px 22px;
+    border-left: 4px solid #c53030;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .feature-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(197, 48, 48, 0.15);
+  }
+  .feature-title {
+    font-weight: 700;
+    color: #1a202c;
+    font-size: 1.08em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .feature-num {
+    background: #c53030;
+    color: white;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85em;
+    font-weight: 700;
+  }
+  .feature-desc { color: #4a5568; margin-top: 4px; }
+  .feature-desc code {
+    background: #2d3748;
+    color: #fc8181;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: "Consolas", "Monaco", monospace;
+  }
+  .feature-why {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #cbd5e0;
+    font-size: 0.95em;
+    color: #2c5282;
+  }
+  .feature-why strong { color: #2c5282; }
+  .closing-hook {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    color: #f7fafc;
+    padding: 25px 30px;
+    border-radius: 12px;
+    margin: 25px 0;
+    position: relative;
+  }
+  .closing-hook::before {
+    content: "🎯";
+    position: absolute;
+    top: -15px;
+    left: 25px;
+    background: #f6ad55;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  .closing-hook .label {
+    color: #f6ad55;
+    font-weight: 700;
+    font-size: 0.85em;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    margin-left: 50px;
+  }
+  .closing-hook .text { font-size: 1.05em; line-height: 1.6; }
+  .key-phrases { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .phrase-chip {
+    background: #e6fffa;
+    color: #234e52;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.92em;
+    font-weight: 500;
+    border: 1px solid #81e6d9;
+  }
+  .phrase-chip::before { content: "✅ "; }
+  .analogy {
+    background: #fef5e7;
+    border-left: 4px solid #ed8936;
+    padding: 16px 22px;
+    border-radius: 8px;
+    margin: 12px 0;
+    color: #7b341e;
+  }
+  .analogy strong { color: #c05621; }
+  .footer {
+    text-align: center;
+    color: #718096;
+    margin-top: 40px;
+    font-size: 0.9em;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>📨 Apache Kafka Interview Prep</h1>
+    <p>25 must-know questions — explained simply, with analogies for easy memory</p>
+  </div>
+
+  <div class="toc">
+    <h2>📑 Table of Contents</h2>
+    <ol>
+      <li><a href="#q1">What is Apache Kafka and why is it popular?</a></li>
+      <li><a href="#q2">Kafka vs Traditional Message Queues (RabbitMQ, ActiveMQ)</a></li>
+      <li><a href="#q3">Core Kafka Architecture & Components</a></li>
+      <li><a href="#q4">What is a Topic and a Partition?</a></li>
+      <li><a href="#q5">What is an Offset in Kafka?</a></li>
+      <li><a href="#q6">Producer & Consumer — basics</a></li>
+      <li><a href="#q7">What is a Consumer Group and why is it important?</a></li>
+      <li><a href="#q8">What is a Broker and a Kafka Cluster?</a></li>
+      <li><a href="#q9">Role of Zookeeper & the KRaft replacement</a></li>
+      <li><a href="#q10">Replication, Leader, Follower & ISR</a></li>
+      <li><a href="#q11">Producer Acknowledgments (acks=0/1/all)</a></li>
+      <li><a href="#q12">Message Delivery Semantics — at-most-once, at-least-once, exactly-once</a></li>
+      <li><a href="#q13">Idempotent Producer</a></li>
+      <li><a href="#q14">Kafka Transactions</a></li>
+      <li><a href="#q15">Retention Policies & Log Compaction</a></li>
+      <li><a href="#q16">Partition Assignment Strategies</a></li>
+      <li><a href="#q17">Consumer Offset Management (auto vs manual commit)</a></li>
+      <li><a href="#q18">Consumer Rebalancing</a></li>
+      <li><a href="#q19">What is Kafka Connect?</a></li>
+      <li><a href="#q20">What is Kafka Streams?</a></li>
+      <li><a href="#q21">Schema Registry & Avro</a></li>
+      <li><a href="#q22">Why is Kafka so fast?</a></li>
+      <li><a href="#q23">Common Kafka Use Cases</a></li>
+      <li><a href="#q24">Important Producer & Consumer Configurations</a></li>
+      <li><a href="#q25">Kafka Security & Monitoring</a></li>
+    </ol>
+  </div>
+
+  <!-- Q1 -->
+  <div class="question-card" id="q1">
+    <span class="q-number">QUESTION 1</span>
+    <div class="q-title">🔹 What is Apache Kafka and why is it popular?</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        <strong>Apache Kafka</strong> is a <strong>distributed event-streaming platform</strong> originally built at LinkedIn (2011, open-sourced). It acts as a high-throughput, fault-tolerant, durable <strong>message broker</strong> + <strong>storage system</strong> + <strong>stream-processing platform</strong> — all in one.
+      </div>
+      <div class="one-liner">
+        ✨ <strong>One-liner:</strong> <em>Kafka is a "central nervous system for data" — capturing, storing, and distributing events across an entire organization in real time.</em>
+      </div>
+    </div>
+
+    <div class="analogy">
+      📰 <strong>Analogy:</strong> Think of Kafka as a giant <strong>newspaper distribution system</strong>. Newspapers (messages) are published into different sections (topics). Many readers (consumers) can subscribe to the sections they care about, read at their own pace, and even <strong>re-read old issues</strong> because the newspaper archive is preserved. New readers can arrive years later and start reading from page one — Kafka keeps the history.
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🌟 Why is Kafka So Popular?</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Massive Throughput</div>
+          <div class="feature-desc">Handles <strong>millions of messages per second</strong> on commodity hardware. LinkedIn processes 7+ trillion messages a day.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Durable Storage</div>
+          <div class="feature-desc">Messages are written to disk and replicated. Configurable retention (hours, days, forever). Acts as a <strong>"replayable log"</strong>.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Distributed & Fault-Tolerant</div>
+          <div class="feature-desc">Runs on a <strong>cluster of brokers</strong>. Partitions are replicated — if one broker dies, others take over seamlessly.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Decouples Producers & Consumers</div>
+          <div class="feature-desc">Producers don't know consumers; consumers don't know producers. Add new consumers anytime — the data is already stored.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">5</span> Real-Time Streaming</div>
+          <div class="feature-desc">Sub-millisecond latency. Powers fraud detection, real-time analytics, recommendation engines.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">6</span> Rich Ecosystem</div>
+          <div class="feature-desc">Kafka Connect (integrations), Kafka Streams (processing), Schema Registry, KSQL — a complete platform.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎯 Real-World Examples</div>
+      <div class="quote-box">
+        🔹 <strong>LinkedIn</strong> — activity tracking, log aggregation (Kafka's birthplace)<br>
+        🔹 <strong>Netflix</strong> — real-time analytics, recommendation pipeline<br>
+        🔹 <strong>Uber</strong> — geo-location streaming, dispatch system<br>
+        🔹 <strong>Airbnb</strong> — event-driven microservice communication<br>
+        🔹 <strong>Banks</strong> — fraud detection, transaction streaming
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Kafka isn't just a message queue — it's a <strong style="color:#f6ad55;">distributed, durable, replayable event log</strong>. That's why it became the backbone of modern event-driven architectures. <strong style="color:#f6ad55;">'Where data lives, Kafka flows.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Distributed event-streaming platform</span>
+        <span class="phrase-chip">Replayable, durable log</span>
+        <span class="phrase-chip">Decouples producers and consumers</span>
+        <span class="phrase-chip">Trillion-message scale</span>
+        <span class="phrase-chip">Central nervous system for data</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question-card" id="q2">
+    <span class="q-number">QUESTION 2</span>
+    <div class="q-title">🔹 Kafka vs Traditional Message Queues (RabbitMQ, ActiveMQ)</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Purpose</div>
+      <div class="quote-box">
+        Both Kafka and traditional message queues let services exchange messages — but they work in <strong>fundamentally different ways</strong>:<br><br>
+        🔹 <strong>RabbitMQ / ActiveMQ</strong> = traditional brokers — push-based, route &amp; deliver, then forget<br>
+        🔹 <strong>Kafka</strong> = a <strong>distributed log</strong> — pull-based, store messages even after consumption, optimized for huge throughput
+      </div>
+      <div class="one-liner">
+        ✨ <em>RabbitMQ = post office (deliver and discard). Kafka = library (deliver and keep).</em>
+      </div>
+    </div>
+
+    <div class="analogy">
+      📚 <strong>Analogy:</strong> RabbitMQ is like a <strong>post office</strong> — it delivers your letter to the recipient and the letter is gone. Kafka is like a <strong>library</strong> — books (messages) stay on the shelf; many readers can come and read the same book independently, even years later.
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📊 Side-by-Side Comparison</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">┌──────────────────────┬────────────────────────┬──────────────────────────┐
+│ Aspect               │ RabbitMQ / ActiveMQ    │ Kafka                    │
+├──────────────────────┼────────────────────────┼──────────────────────────┤
+│ Storage model        │ Queue (FIFO, deleted)  │ Append-only log (kept)   │
+│ Delivery model       │ Push to consumer       │ Consumer pulls           │
+│ Throughput           │ Tens of thousands/sec  │ Millions/sec             │
+│ Replay capability    │ ❌ No                  │ ✅ Yes (offset rewind)    │
+│ Multiple consumers   │ Each msg → 1 consumer  │ Same msg → N consumers   │
+│ Routing complexity   │ ✅ Rich (exchanges)    │ ❌ Simple (topics)        │
+│ Ordering guarantee   │ Per queue              │ Per partition            │
+│ Storage size         │ Typically small        │ Terabytes to petabytes   │
+│ Best use case        │ Task queues, RPC       │ Event streaming, logs    │
+└──────────────────────┴────────────────────────┴──────────────────────────┘</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎯 When to Use Which</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">✅</span> RabbitMQ wins when...</div>
+          <div class="feature-desc">Complex routing rules, low-volume task queues, request-reply patterns, when each message has exactly one consumer (e.g., job processing).</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">✅</span> Kafka wins when...</div>
+          <div class="feature-desc">High throughput, event sourcing, log aggregation, multiple independent consumers reading the same stream, replay/audit needs, real-time analytics.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Don't think 'Kafka vs RabbitMQ' — think 'event log vs message queue.' <strong style="color:#f6ad55;">RabbitMQ delivers and forgets. Kafka delivers and remembers.</strong> Pick based on whether you need replayability and multi-consumer streams."</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Append-only distributed log</span>
+        <span class="phrase-chip">Pull-based vs push-based</span>
+        <span class="phrase-chip">Replayability</span>
+        <span class="phrase-chip">Multi-consumer streaming</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question-card" id="q3">
+    <span class="q-number">QUESTION 3</span>
+    <div class="q-title">🔹 Core Kafka Architecture & Components</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        Kafka has a small set of well-defined components that, working together, give it its scalability, durability, and fault-tolerance.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Producer → Topic (partitions) → Broker (cluster) → Consumer Group. That's Kafka in one line.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🏛️ The Core Components</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Producer</div>
+          <div class="feature-desc">Application that <strong>publishes (writes)</strong> messages to Kafka topics.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Consumer</div>
+          <div class="feature-desc">Application that <strong>subscribes (reads)</strong> messages from topics.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Broker</div>
+          <div class="feature-desc">A single Kafka server. Stores partitions, handles producer/consumer requests.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Cluster</div>
+          <div class="feature-desc">A group of brokers working together. Provides scalability &amp; fault tolerance.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">5</span> Topic</div>
+          <div class="feature-desc">A logical category/feed for messages (e.g., <code>orders</code>, <code>payments</code>, <code>clicks</code>).</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">6</span> Partition</div>
+          <div class="feature-desc">A topic is split into partitions — each is an ordered, immutable sequence (a log file). Enables parallelism.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">7</span> Offset</div>
+          <div class="feature-desc">A unique, sequential ID for each message <strong>within a partition</strong>. Tells consumers what they've read.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">8</span> Consumer Group</div>
+          <div class="feature-desc">A group of consumers sharing the work of reading from a topic — each partition is consumed by exactly one consumer in the group.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">9</span> Zookeeper / KRaft</div>
+          <div class="feature-desc">Coordinates brokers — leader election, metadata, configuration. <strong>KRaft</strong> (Kafka Raft) is the modern Zookeeper-less replacement.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎨 Visual Architecture</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">      ┌──────────┐         ┌──────────┐
+      │ Producer │         │ Producer │
+      └────┬─────┘         └────┬─────┘
+           ↓ write              ↓ write
+   ┌──────────────────────────────────┐
+   │      KAFKA CLUSTER (Brokers)     │
+   │  ┌────────────┐  ┌────────────┐  │
+   │  │  Topic A   │  │  Topic B   │  │
+   │  │ ┌──┐ ┌──┐  │  │ ┌──┐ ┌──┐  │  │
+   │  │ │P0│ │P1│  │  │ │P0│ │P1│  │  │
+   │  │ └──┘ └──┘  │  │ └──┘ └──┘  │  │
+   │  └────────────┘  └────────────┘  │
+   └──────────────────────────────────┘
+           ↑ read              ↑ read
+      ┌────┴─────┐         ┌────┴─────┐
+      │ Consumer │         │ Consumer │
+      │  Group X │         │  Group Y │
+      └──────────┘         └──────────┘</pre>
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Kafka's elegance: <strong style="color:#f6ad55;">just 4 actors (Producer, Broker, Topic, Consumer) and 2 concepts (Partition, Offset)</strong> — but combined, they deliver internet-scale streaming. <strong style="color:#f6ad55;">Master these 6 terms and you've mastered 80% of Kafka.</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Producers, brokers, consumers, topics, partitions</span>
+        <span class="phrase-chip">Append-only log per partition</span>
+        <span class="phrase-chip">Consumer groups for parallelism</span>
+        <span class="phrase-chip">Zookeeper or KRaft for coordination</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question-card" id="q4">
+    <span class="q-number">QUESTION 4</span>
+    <div class="q-title">🔹 What is a Topic and a Partition?</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        🔹 <strong>Topic</strong> = a logical name/category for a stream of messages (e.g., <code>orders</code>, <code>user-signups</code>, <code>page-views</code>).<br><br>
+        🔹 <strong>Partition</strong> = a topic is internally split into one or more partitions. Each partition is an <strong>ordered, immutable sequence of messages</strong> stored as a log on disk.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Topic = a folder. Partitions = files inside that folder. Each file is append-only.</em>
+      </div>
+    </div>
+
+    <div class="analogy">
+      📰 <strong>Analogy:</strong> Imagine a newspaper called "Sports News" (the <strong>topic</strong>). To meet huge demand, the publisher prints it across <strong>3 separate printing presses</strong> (the <strong>partitions</strong>) running in parallel. Each press produces its own ordered stack of papers. Three readers can read simultaneously, one per press.
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🌟 Why Partitions Matter</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Parallelism</div>
+          <div class="feature-desc">Producers can write to multiple partitions concurrently. Consumers in a group can read multiple partitions concurrently.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Scalability</div>
+          <div class="feature-desc">More partitions = more throughput. Partitions can be spread across many brokers.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Ordered within Partition</div>
+          <div class="feature-desc">Messages in a single partition are strictly ordered. Across partitions, order is NOT guaranteed.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Replication Unit</div>
+          <div class="feature-desc">Each partition is replicated across multiple brokers — that's how Kafka achieves fault tolerance.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🔑 How Producers Pick a Partition</div>
+      <div class="quote-box">
+        🔹 <strong>If a key is set</strong> (e.g., <code>userId</code>) → Kafka uses <code>hash(key) % numPartitions</code>. <strong>Same key always goes to the same partition</strong> (preserving order per user).<br>
+        🔹 <strong>If no key</strong> → round-robin (or "sticky" partitioner since 2.4) for even distribution.<br>
+        🔹 <strong>Custom partitioner</strong> — you can implement your own.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚠️ Important Trade-offs</div>
+      <div class="quote-box">
+        🔹 <strong>More partitions = more parallelism</strong> but also more open file handles, more rebalancing time, more end-to-end latency.<br>
+        🔹 <strong>Order is per-partition</strong>, not per-topic. If you need strict ordering, route related events to the same partition (using a key).<br>
+        🔹 <strong>Partitions can be added but not removed</strong>. Plan capacity upfront.
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Partitions are <strong style="color:#f6ad55;">the unit of parallelism, the unit of ordering, and the unit of replication</strong> in Kafka. Choose partition count wisely — it directly determines your max throughput and consumer parallelism."</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Topic = logical, Partition = physical</span>
+        <span class="phrase-chip">Ordered within partition only</span>
+        <span class="phrase-chip">Same key → same partition</span>
+        <span class="phrase-chip">Partition = unit of parallelism</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="question-card" id="q5">
+    <span class="q-number">QUESTION 5</span>
+    <div class="q-title">🔹 What is an Offset in Kafka?</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        An <strong>offset</strong> is a <strong>unique, sequential, ever-increasing integer ID</strong> assigned to each message <strong>within a partition</strong>. It identifies the position of a message in the log — like a line number in a file.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Offset = "bookmark" — tells the consumer "I've read up to message #154 in partition 2."</em>
+      </div>
+    </div>
+
+    <div class="analogy">
+      📖 <strong>Analogy:</strong> Imagine reading a long e-book. Your Kindle remembers <strong>"page 154"</strong> — that's the offset. Even if you close the book and come back tomorrow, you resume from page 154. In Kafka, the offset is the consumer's bookmark per partition.
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📦 How Offsets Work</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">Partition 0:  [msg:0] [msg:1] [msg:2] [msg:3] [msg:4] [msg:5]
+Partition 1:  [msg:0] [msg:1] [msg:2] [msg:3]
+Partition 2:  [msg:0] [msg:1] [msg:2] [msg:3] [msg:4]
+
+Consumer's offset state:
+  Partition 0 → committed offset: 4 (next read = 5)
+  Partition 1 → committed offset: 2 (next read = 3)
+  Partition 2 → committed offset: 0 (next read = 1)</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🌟 Key Properties</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Per-Partition</div>
+          <div class="feature-desc">Each partition has its <strong>own independent offset sequence</strong>. <code>msg:5</code> in partition 0 has nothing to do with <code>msg:5</code> in partition 1.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Immutable & Monotonic</div>
+          <div class="feature-desc">Offsets always increase. They're never reused, never rewritten.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Consumer-Tracked</div>
+          <div class="feature-desc">Each consumer tracks its <strong>own offsets</strong> per partition. Two different consumer groups read independently.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Stored in __consumer_offsets</div>
+          <div class="feature-desc">Kafka stores committed offsets in a special internal topic — so consumers can resume after restart.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🔑 Special Offset Values</div>
+      <div class="quote-box">
+        🔹 <strong>auto.offset.reset = earliest</strong> — read from beginning if no committed offset<br>
+        🔹 <strong>auto.offset.reset = latest</strong> — read only new messages (default)<br>
+        🔹 <strong>auto.offset.reset = none</strong> — throw exception if no committed offset
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Offsets are <strong style="color:#f6ad55;">Kafka's secret to replayability</strong>. Want to reprocess yesterday's data? Reset the offset. Want a new consumer to start from scratch? Use earliest. <strong style="color:#f6ad55;">'The offset is the bookmark, and Kafka never loses your bookmark.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Per-partition sequential ID</span>
+        <span class="phrase-chip">Stored in __consumer_offsets topic</span>
+        <span class="phrase-chip">auto.offset.reset</span>
+        <span class="phrase-chip">Replay by rewinding offset</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="question-card" id="q6">
+    <span class="q-number">QUESTION 6</span>
+    <div class="q-title">🔹 Producer & Consumer — Basics</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        🔹 <strong>Producer</strong> — an app that <strong>publishes (writes)</strong> messages to one or more topics. Decides which partition to send each message to.<br><br>
+        🔹 <strong>Consumer</strong> — an app that <strong>subscribes (reads)</strong> messages from one or more topics, tracks its progress via offsets.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Producer = the writer. Consumer = the reader. Kafka = the durable bookshelf in between.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📤 The Producer</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-desc">
+            🔹 Sends a <strong>ProducerRecord</strong> = (topic, key, value, optional partition, optional timestamp)<br>
+            🔹 Internally <strong>batches messages</strong> for efficiency<br>
+            🔹 <strong>Compresses</strong> batches (gzip, snappy, lz4, zstd)<br>
+            🔹 Waits for <strong>acknowledgment</strong> from broker (acks=0/1/all)<br>
+            🔹 Retries on failure with optional <strong>idempotence</strong> (no duplicates)<br>
+            🔹 Async by default — returns a Future / callback
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📥 The Consumer</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-desc">
+            🔹 <strong>Subscribes</strong> to one or more topics (or assigns specific partitions)<br>
+            🔹 Continuously <strong>polls()</strong> the broker for new records<br>
+            🔹 Joins a <strong>Consumer Group</strong> to share work with other consumers<br>
+            🔹 Tracks <strong>offsets</strong> per partition; commits them periodically (or manually)<br>
+            🔹 Handles <strong>rebalancing</strong> when consumers join/leave the group<br>
+            🔹 Pull-based — consumer controls the pace (no overload)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛠️ Spring Kafka Example (Java)</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;"><span style="color:#a0aec0;">// Producer</span>
+<span style="color:#fc8181;">@Autowired</span>
+private KafkaTemplate&lt;String, Order&gt; kafkaTemplate;
+
+public void publish(Order o) {
+    kafkaTemplate.send(<span style="color:#f6ad55;">"orders"</span>, o.getId(), o);
+}
+
+<span style="color:#a0aec0;">// Consumer</span>
+<span style="color:#fc8181;">@KafkaListener</span>(topics = <span style="color:#f6ad55;">"orders"</span>, groupId = <span style="color:#f6ad55;">"order-processor"</span>)
+public void consume(Order order) {
+    log.info(<span style="color:#f6ad55;">"Received: {}"</span>, order);
+}</pre>
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Producers and consumers are <strong style="color:#f6ad55;">decoupled in time AND space</strong> — they don't need to be online together, and they don't even need to know each other exists. Kafka is the durable buffer in between. <strong style="color:#f6ad55;">'Write fast, read at your own pace.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">ProducerRecord = topic + key + value</span>
+        <span class="phrase-chip">Pull-based consumer (poll loop)</span>
+        <span class="phrase-chip">Decoupled in time and space</span>
+        <span class="phrase-chip">Batching + compression for throughput</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="question-card" id="q7">
+    <span class="q-number">QUESTION 7</span>
+    <div class="q-title">🔹 What is a Consumer Group and why is it important?</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        A <strong>Consumer Group</strong> is a set of consumers that <strong>share the work</strong> of reading from a topic. Kafka assigns each partition to <strong>exactly one consumer</strong> within the group — never two from the same group consume the same partition simultaneously.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Consumer Group = teamwork. The work (partitions) is divided fairly among teammates (consumers).</em>
+      </div>
+    </div>
+
+    <div class="analogy">
+      📦 <strong>Analogy:</strong> Imagine 3 mailboxes (partitions) in a building and 3 mail-carriers (consumers in one group) — each carrier takes one mailbox. If a 4th carrier joins, they sit idle (no extra mailbox). If one carrier leaves, the remaining 2 split the 3 mailboxes again. <strong>Different groups</strong> are like different delivery companies — each gets the full set of mailboxes independently.
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎯 Why Consumer Groups Matter</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Horizontal Scaling</div>
+          <div class="feature-desc">Add more consumers to the group → work spreads automatically. Up to N consumers per group, where N = number of partitions.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Fault Tolerance</div>
+          <div class="feature-desc">If a consumer crashes, its partitions are reassigned to other group members within seconds (rebalancing).</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Independent Streams</div>
+          <div class="feature-desc">Multiple groups can subscribe to the same topic. Each group reads independently — at its own pace, with its own offsets.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Load Balancing</div>
+          <div class="feature-desc">Kafka automatically distributes partitions evenly across the group.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚠️ Important Rules</div>
+      <div class="quote-box">
+        🔹 <strong>Each partition → exactly one consumer in a group</strong>. (One-to-one.)<br>
+        🔹 <strong>One consumer can handle multiple partitions</strong>. (One-to-many.)<br>
+        🔹 If consumers &gt; partitions, the extras are <strong>idle</strong>.<br>
+        🔹 Different groups read the SAME data INDEPENDENTLY. <strong>(Pub-sub semantics.)</strong>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎨 Visual</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">Topic "orders" with 4 partitions
+
+         Partitions: P0, P1, P2, P3
+
+Group A (3 consumers):
+  ConsumerA1 → P0, P3
+  ConsumerA2 → P1
+  ConsumerA3 → P2
+
+Group B (4 consumers):              ← reads SAME data, independently
+  ConsumerB1 → P0
+  ConsumerB2 → P1
+  ConsumerB3 → P2
+  ConsumerB4 → P3</pre>
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Consumer groups give Kafka its <strong style="color:#f6ad55;">'best of both worlds'</strong> behavior — within a group, it's a queue (each message processed once). Across groups, it's pub-sub (every group sees everything). <strong style="color:#f6ad55;">'Same topic, many independent readers.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Each partition → one consumer per group</span>
+        <span class="phrase-chip">Horizontal scaling via group members</span>
+        <span class="phrase-chip">Multiple groups = pub-sub</span>
+        <span class="phrase-chip">Max parallelism = partition count</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="question-card" id="q8">
+    <span class="q-number">QUESTION 8</span>
+    <div class="q-title">🔹 What is a Broker and a Kafka Cluster?</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        🔹 <strong>Broker</strong> = a <strong>single Kafka server</strong>. Holds partitions, accepts producer writes, serves consumer reads.<br><br>
+        🔹 <strong>Cluster</strong> = a <strong>group of brokers</strong> working together. Provides scalability and fault tolerance.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Broker = one machine. Cluster = the team of machines that act as one giant Kafka.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🏛️ How Brokers Work in a Cluster</div>
+      <div class="quote-box">
+        🔹 Each broker has a <strong>unique broker ID</strong>.<br>
+        🔹 A topic's partitions are <strong>spread across brokers</strong> for load distribution.<br>
+        🔹 Each partition has a <strong>leader broker</strong> (handles all reads/writes) and <strong>follower brokers</strong> (replicas).<br>
+        🔹 If a broker fails, partition leaders are <strong>elected on other brokers</strong> automatically — no downtime.<br>
+        🔹 Brokers coordinate via <strong>Zookeeper</strong> (or KRaft in modern Kafka).
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛡️ The Controller Broker</div>
+      <div class="quote-box">
+        One broker in the cluster is elected as the <strong>Controller</strong>. Its job:<br>
+        🔹 Maintains cluster metadata (which broker holds what)<br>
+        🔹 Manages partition leader election<br>
+        🔹 Handles broker join/leave events<br><br>
+        If the controller dies, another broker is elected automatically.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🌟 Why Multiple Brokers?</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Scalability</div>
+          <div class="feature-desc">Add brokers → spread partitions → more throughput. Linear horizontal scaling.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Fault Tolerance</div>
+          <div class="feature-desc">Each partition is replicated across brokers. Lose one broker, no data lost.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Geographic Distribution</div>
+          <div class="feature-desc">Brokers can span data centers (multi-DC setups via MirrorMaker).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📊 Typical Cluster Sizes</div>
+      <div class="quote-box">
+        🔹 <strong>Small (dev/test)</strong> — 1 broker (no fault tolerance)<br>
+        🔹 <strong>Production minimum</strong> — 3 brokers (RF=3 for safety)<br>
+        🔹 <strong>Medium prod</strong> — 5–10 brokers<br>
+        🔹 <strong>Large (LinkedIn, Uber)</strong> — 100s to 1000s of brokers per cluster
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"A Kafka cluster is just <strong style="color:#f6ad55;">brokers + coordination</strong>. Each broker stores some partitions, leads some partitions, follows others. Cluster size scales linearly with your throughput needs. <strong style="color:#f6ad55;">'Distribute partitions, replicate for safety, scale brokers for speed.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Broker = single Kafka server</span>
+        <span class="phrase-chip">Controller broker for metadata</span>
+        <span class="phrase-chip">Linear horizontal scaling</span>
+        <span class="phrase-chip">Replication across brokers</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="question-card" id="q9">
+    <span class="q-number">QUESTION 9</span>
+    <div class="q-title">🔹 Role of Zookeeper & the KRaft Replacement</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        Historically, Kafka used <strong>Apache Zookeeper</strong> — a separate distributed coordination service — to manage cluster metadata, leader election, and broker discovery. Modern Kafka (3.3+) supports <strong>KRaft mode</strong> (Kafka Raft) — Zookeeper-less, simpler, faster.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Zookeeper used to be Kafka's "brain". KRaft moves the brain INSIDE Kafka.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🐘 What Zookeeper Did (Old Way)</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-desc">
+            🔹 <strong>Cluster metadata</strong> — list of brokers, topics, partitions, leaders<br>
+            🔹 <strong>Controller election</strong> — picks one broker as the controller<br>
+            🔹 <strong>Broker membership</strong> — heartbeats; detects broker failures<br>
+            🔹 <strong>Configuration</strong> — topic/broker configs<br>
+            🔹 <strong>ACLs</strong> — security rules (early versions)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">😩 Problems with Zookeeper</div>
+      <div class="quote-box">
+        🔹 <strong>Operational overhead</strong> — deploy, secure, monitor a separate service<br>
+        🔹 <strong>Scalability limits</strong> — Zookeeper struggled at huge metadata scale<br>
+        🔹 <strong>Complex failure modes</strong> — Zookeeper down = Kafka in trouble<br>
+        🔹 <strong>Slow controller failover</strong> — could take seconds<br>
+        🔹 <strong>Two systems to learn</strong> for new operators
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚡ KRaft Mode (the Future)</div>
+      <div class="quote-box">
+        <strong>KRaft</strong> = Kafka Raft Metadata. Kafka's own brokers manage metadata using the <strong>Raft consensus algorithm</strong> — no Zookeeper needed.<br><br>
+        🔹 <strong>Status:</strong> production-ready since Kafka 3.3 (2022). Zookeeper deprecated.<br>
+        🔹 <strong>Simpler ops</strong> — only one system to deploy &amp; secure<br>
+        🔹 <strong>Faster controller failover</strong> — milliseconds instead of seconds<br>
+        🔹 <strong>Scales to millions of partitions</strong> per cluster<br>
+        🔹 <strong>Faster startup</strong> for huge clusters
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🔄 The Architecture Difference</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">OLD (Zookeeper):
+  ┌──────────────┐     ┌────────────────┐
+  │  Zookeeper   │ ←→  │ Kafka Brokers  │
+  │   Ensemble   │     │   (Cluster)    │
+  └──────────────┘     └────────────────┘
+
+NEW (KRaft):
+  ┌────────────────────────────────────┐
+  │   Kafka Brokers (with Controllers) │
+  │   Self-managed via Raft consensus  │
+  └────────────────────────────────────┘</pre>
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"<strong style="color:#f6ad55;">Zookeeper is being phased out.</strong> If you start a new Kafka project today, use KRaft. If you maintain an old cluster, plan a migration. <strong style="color:#f6ad55;">'One less moving part = less ops pain.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Zookeeper-less Kafka via KRaft</span>
+        <span class="phrase-chip">Raft consensus for metadata</span>
+        <span class="phrase-chip">Faster controller failover</span>
+        <span class="phrase-chip">Scales to millions of partitions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="question-card" id="q10">
+    <span class="q-number">QUESTION 10</span>
+    <div class="q-title">🔹 Replication, Leader, Follower & ISR</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        Kafka achieves fault tolerance via <strong>partition replication</strong>. Each partition has multiple copies (replicas) on different brokers — one is the <strong>leader</strong>, the rest are <strong>followers</strong>. The set of replicas that are <strong>caught up</strong> with the leader is called the <strong>ISR (In-Sync Replicas)</strong>.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Replication factor 3 = 3 copies. One leader, two followers. Lose any 1, you're safe.</em>
+      </div>
+    </div>
+
+    <div class="analogy">
+      📰 <strong>Analogy:</strong> Like having <strong>multiple printing presses</strong> for the same newspaper. The "lead" press prints first; "follower" presses copy each issue. If the lead breaks, a follower is promoted to lead — no missed issues.
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🏛️ Roles Explained</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">👑</span> Leader</div>
+          <div class="feature-desc">Handles ALL reads and writes for the partition. There is exactly one leader per partition at any time.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">📋</span> Follower</div>
+          <div class="feature-desc">Continuously fetches new messages from the leader. Doesn't serve clients directly. Acts as a hot standby.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">✅</span> ISR (In-Sync Replicas)</div>
+          <div class="feature-desc">The set of replicas (leader + caught-up followers) that are within <code>replica.lag.time.max.ms</code> of the leader. Only ISR members can be promoted to leader.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">⚠️</span> Out-of-Sync Replica</div>
+          <div class="feature-desc">A follower that's lagging behind. Removed from ISR until it catches up.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🔄 What Happens on Broker Failure?</div>
+      <div class="quote-box">
+        1️⃣ Broker holding a partition leader crashes<br>
+        2️⃣ Controller detects failure (heartbeat timeout)<br>
+        3️⃣ Controller picks an ISR member as new leader<br>
+        4️⃣ Producers/consumers redirect to the new leader<br>
+        5️⃣ When the failed broker recovers, it rejoins as a follower &amp; catches up
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚙️ Important Configurations</div>
+      <div class="quote-box">
+        🔹 <strong>replication.factor</strong> — number of replicas per partition (typically 3 in prod)<br>
+        🔹 <strong>min.insync.replicas</strong> — minimum ISR size before producer can write (with acks=all). Typically 2 with RF=3.<br>
+        🔹 <strong>unclean.leader.election.enable</strong> — if true, allows out-of-sync replica to become leader (data loss risk). Default: false.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛡️ Best Practice for Production</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">replication.factor      = 3
+min.insync.replicas     = 2
+acks                    = all
+unclean.leader.election = false</pre>
+      </div>
+      <div class="quote-box">
+        This combination ensures: a write is acknowledged only when stored on at least 2 of 3 replicas. You can tolerate 1 broker failure with zero data loss.
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Replication is the heart of Kafka's durability. <strong style="color:#f6ad55;">'Leaders serve, followers replicate, ISR is the safety net.'</strong> Tune <strong>RF + acks + min.insync.replicas</strong> together — they form the durability triangle."</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Leader-Follower replication</span>
+        <span class="phrase-chip">ISR = In-Sync Replicas</span>
+        <span class="phrase-chip">RF=3, min.insync.replicas=2, acks=all</span>
+        <span class="phrase-chip">Unclean leader election (avoid in prod)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="question-card" id="q11">
+    <span class="q-number">QUESTION 11</span>
+    <div class="q-title">🔹 Producer Acknowledgments (acks=0/1/all)</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        The <strong>acks</strong> setting controls <strong>how many brokers must acknowledge</strong> a producer's write before the producer considers the message "successfully sent." It's the most important durability vs throughput trade-off in Kafka.
+      </div>
+      <div class="one-liner">
+        ✨ <em>acks=0 → fastest, riskiest. acks=1 → balanced. acks=all → safest, slowest.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📊 The 3 Acknowledgment Modes</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">0</span> acks=0 — Fire & Forget</div>
+          <div class="feature-desc">
+            Producer doesn't wait for any ack. Sends and moves on.<br>
+            ✅ <strong>Fastest</strong> (highest throughput, lowest latency)<br>
+            ❌ <strong>Risky</strong> — if broker dies before message lands, data is lost<br>
+            🎯 <strong>Use for:</strong> metrics, telemetry, log streams (where loss is acceptable)
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> acks=1 — Leader Only (default)</div>
+          <div class="feature-desc">
+            Producer waits for leader broker to acknowledge.<br>
+            ✅ <strong>Balanced</strong> — fast and reasonably safe<br>
+            ❌ <strong>Edge-case loss</strong> — if leader dies AFTER ack but BEFORE replication, data lost<br>
+            🎯 <strong>Use for:</strong> most general use cases (default)
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">∞</span> acks=all (or -1) — All ISRs</div>
+          <div class="feature-desc">
+            Producer waits until ALL in-sync replicas acknowledge.<br>
+            ✅ <strong>Strongest durability</strong> — no data loss as long as at least <code>min.insync.replicas</code> survive<br>
+            ❌ <strong>Slower</strong> — full replication latency<br>
+            🎯 <strong>Use for:</strong> financial transactions, audit logs, anything you can't lose
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📊 Quick Comparison</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">┌────────┬────────────┬──────────────────┬────────────────────────┐
+│ acks   │ Latency    │ Durability       │ Use case               │
+├────────┼────────────┼──────────────────┼────────────────────────┤
+│ 0      │ ⭐⭐⭐⭐⭐  │ ⚠️ None           │ Metrics, fire-and-forget│
+│ 1      │ ⭐⭐⭐⭐    │ ✅ Good           │ General default         │
+│ all    │ ⭐⭐       │ 🛡️ Strongest     │ Money, audit, critical  │
+└────────┴────────────┴──────────────────┴────────────────────────┘</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚙️ Pairs Importantly With</div>
+      <div class="quote-box">
+        🔹 <strong>min.insync.replicas</strong> — when acks=all, this defines how many replicas MUST be in sync. If fewer, producer fails (rather than silently writing to fewer copies).<br>
+        🔹 <strong>retries</strong> — producer retries on failure (with idempotence enabled, no duplicates).<br>
+        🔹 <strong>enable.idempotence=true</strong> — for exactly-once semantics, set this with acks=all.
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"<strong style="color:#f6ad55;">Acks is the durability dial.</strong> Crank it up for safety (acks=all + min.insync.replicas=2 + RF=3), or dial down for speed (acks=1). <strong style="color:#f6ad55;">'No silver bullet — pick based on what you can afford to lose.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">acks = durability dial</span>
+        <span class="phrase-chip">acks=all + RF=3 + min.insync=2 → no data loss</span>
+        <span class="phrase-chip">Throughput vs durability trade-off</span>
+        <span class="phrase-chip">acks=all required for exactly-once</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="question-card" id="q12">
+    <span class="q-number">QUESTION 12</span>
+    <div class="q-title">🔹 Message Delivery Semantics — at-most-once, at-least-once, exactly-once</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        Three guarantees Kafka can offer for message delivery:<br><br>
+        🔹 <strong>At-most-once</strong> — message may be lost, but never duplicated<br>
+        🔹 <strong>At-least-once</strong> — message never lost, but may be duplicated<br>
+        🔹 <strong>Exactly-once</strong> — never lost, never duplicated (the holy grail)
+      </div>
+      <div class="one-liner">
+        ✨ <em>"How many times can a message be delivered?" — the fundamental distributed systems question.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📦 The Three Semantics</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> At-Most-Once (Fire & Forget)</div>
+          <div class="feature-desc">
+            Producer: <code>acks=0</code>, no retries.<br>
+            Consumer: commit offset BEFORE processing (auto-commit).<br>
+            ✅ Highest throughput, simplest<br>
+            ❌ Messages can be lost on failure<br>
+            🎯 <strong>Use for:</strong> metrics, telemetry, click streams where loss is OK
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> At-Least-Once (Default)</div>
+          <div class="feature-desc">
+            Producer: <code>acks=all</code>, retries enabled.<br>
+            Consumer: process THEN commit offset.<br>
+            ✅ No data loss<br>
+            ❌ Possible duplicates (e.g., if consumer crashes between processing and commit)<br>
+            🎯 <strong>Use for:</strong> most workloads — pair with idempotent consumers
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Exactly-Once (EOS)</div>
+          <div class="feature-desc">
+            Producer: <code>enable.idempotence=true</code> + transactions.<br>
+            Consumer: <code>isolation.level=read_committed</code>.<br>
+            Use Kafka <strong>transactions</strong> for atomic write across topics + offset commit.<br>
+            ✅ No loss, no duplicates<br>
+            ❌ Slightly slower<br>
+            🎯 <strong>Use for:</strong> financial transactions, billing, exactly-once processing pipelines
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚠️ Where Duplicates Actually Come From</div>
+      <div class="quote-box">
+        🔹 <strong>Producer retries</strong> — message sent, ack lost, producer retries → broker has 2 copies<br>
+        🔹 <strong>Consumer rebalances</strong> — partition reassigned mid-processing → next consumer reprocesses<br>
+        🔹 <strong>Consumer crash</strong> — processed but didn't commit → next time reprocesses<br><br>
+        Solutions: <strong>idempotent producer</strong> (no producer-side dupes), <strong>transactions</strong> (atomic write+commit), <strong>idempotent consumer</strong> (handle dupes gracefully).
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"<strong style="color:#f6ad55;">Default Kafka is at-least-once</strong>. Most real-world systems combine <strong style="color:#f6ad55;">at-least-once delivery + idempotent consumers</strong> — simpler than full EOS, just as effective. <strong style="color:#f6ad55;">'Make consumers idempotent and duplicates don't hurt.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">At-most-once / at-least-once / exactly-once</span>
+        <span class="phrase-chip">Idempotent producer for no dupes</span>
+        <span class="phrase-chip">Transactions for atomic write+commit</span>
+        <span class="phrase-chip">Idempotent consumer pattern</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="question-card" id="q13">
+    <span class="q-number">QUESTION 13</span>
+    <div class="q-title">🔹 Idempotent Producer</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        An <strong>idempotent producer</strong> is one where retrying a message <strong>never causes duplicates</strong>. Kafka achieves this by tagging each batch with a unique <strong>producer ID</strong> and <strong>sequence number</strong> — the broker rejects duplicates automatically.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Turn it on with one config — and never worry about duplicate writes from retries.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">😱 The Problem It Solves</div>
+      <div class="quote-box">
+        Without idempotence:<br>
+        1️⃣ Producer sends message X to broker<br>
+        2️⃣ Broker writes it<br>
+        3️⃣ Broker's ack is lost on the network<br>
+        4️⃣ Producer assumes failure, retries → message X stored TWICE<br><br>
+        With idempotence: broker recognizes the retry by sequence number → discards duplicate.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛠️ How to Enable</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">enable.idempotence    = true
+acks                  = all      <span style="color:#a0aec0;">// auto-set when idempotence=true</span>
+retries               = Integer.MAX_VALUE
+max.in.flight.requests.per.connection = 5  <span style="color:#a0aec0;">// auto-capped</span></pre>
+      </div>
+      <div class="quote-box">
+        From Kafka 3.0+, <strong>idempotence is enabled by default</strong>. Just don't disable it.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🔑 How It Works Internally</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-desc">
+            🔹 Producer gets a unique <strong>Producer ID (PID)</strong> from the broker on startup<br>
+            🔹 Each message batch gets an incrementing <strong>sequence number</strong> per partition<br>
+            🔹 Broker tracks the highest seq number it's seen per (PID, partition)<br>
+            🔹 If broker sees a batch with a seq number ≤ already-stored, → discards it<br>
+            🔹 If seq number is too far ahead → throws an error (gap detected)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚠️ Important Notes</div>
+      <div class="quote-box">
+        🔹 Idempotence is <strong>per producer session</strong>. If the producer restarts, it gets a new PID — duplicates across sessions still possible (need transactions for that).<br>
+        🔹 Idempotence is <strong>per partition</strong>. Order is preserved per partition.<br>
+        🔹 Has very <strong>minimal overhead</strong> — basically free.
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Idempotent producer = <strong style="color:#f6ad55;">'safe retries' for free</strong>. It prevents duplicates from network glitches at the producer level. <strong style="color:#f6ad55;">'If you're not using it, you're inviting bugs.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Producer ID + sequence number</span>
+        <span class="phrase-chip">Default since Kafka 3.0</span>
+        <span class="phrase-chip">Prevents retry-induced duplicates</span>
+        <span class="phrase-chip">Per-session, per-partition guarantee</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="question-card" id="q14">
+    <span class="q-number">QUESTION 14</span>
+    <div class="q-title">🔹 Kafka Transactions</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        <strong>Kafka transactions</strong> let a producer write to <strong>multiple topics/partitions atomically</strong> — and atomically commit consumer offsets at the same time. Either everything succeeds, or everything is rolled back. Foundation of <strong>exactly-once semantics</strong> for stream processing.
+      </div>
+      <div class="one-liner">
+        ✨ <em>"All-or-nothing" writes across multiple Kafka topics — like ACID for streams.</em>
+      </div>
+    </div>
+
+    <div class="analogy">
+      💸 <strong>Analogy:</strong> Imagine transferring $100 from account A to account B. You need BOTH writes (debit A, credit B) to either both succeed or both fail. That's a transaction. Kafka transactions do the same for messages across topics.
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎯 What Transactions Enable</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Atomic Multi-Topic Writes</div>
+          <div class="feature-desc">Write to <code>orders</code> and <code>inventory</code> topics — both succeed or both fail.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Read-Process-Write Atomicity</div>
+          <div class="feature-desc">In Kafka Streams pipelines: read from input topic, transform, write to output topic, commit offset — all atomic.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Exactly-Once Semantics (EOS)</div>
+          <div class="feature-desc">Combined with idempotent producer, you get true exactly-once processing.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛠️ How to Use</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;"><span style="color:#a0aec0;">// Producer config</span>
+transactional.id      = <span style="color:#f6ad55;">"my-app-tx-1"</span>     <span style="color:#a0aec0;">// unique per producer instance</span>
+enable.idempotence    = true
+acks                  = all
+
+<span style="color:#a0aec0;">// Producer code</span>
+producer.initTransactions();
+try {
+    producer.beginTransaction();
+    producer.send(new ProducerRecord(<span style="color:#f6ad55;">"orders"</span>, ...));
+    producer.send(new ProducerRecord(<span style="color:#f6ad55;">"inventory"</span>, ...));
+    producer.sendOffsetsToTransaction(offsets, consumerGroupId);
+    producer.commitTransaction();
+} catch (Exception e) {
+    producer.abortTransaction();
+}</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📥 Consumer Side — read_committed</div>
+      <div class="quote-box">
+        Consumers must set <code>isolation.level = read_committed</code> to only see committed transactional messages. Default is <code>read_uncommitted</code> (sees everything, even from aborted transactions).
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚠️ Performance Cost</div>
+      <div class="quote-box">
+        🔹 ~10–25% throughput overhead vs non-transactional<br>
+        🔹 Higher end-to-end latency<br>
+        🔹 Use only when you really need atomicity / EOS<br>
+        🔹 For simple at-least-once + idempotent consumers, transactions are overkill
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Kafka transactions = <strong style="color:#f6ad55;">'database-like atomicity for streams'</strong>. Power Kafka Streams' exactly-once mode and any 'read-process-write' pipeline needing strict guarantees. <strong style="color:#f6ad55;">'Powerful but expensive — use sparingly.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Atomic multi-partition writes</span>
+        <span class="phrase-chip">read_committed isolation</span>
+        <span class="phrase-chip">Read-process-write atomicity</span>
+        <span class="phrase-chip">Required for exactly-once processing</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="question-card" id="q15">
+    <span class="q-number">QUESTION 15</span>
+    <div class="q-title">🔹 Retention Policies & Log Compaction</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        Kafka stores messages on disk — but not forever. <strong>Retention policies</strong> control when old messages are deleted. There are <strong>two main strategies</strong>:<br><br>
+        🔹 <strong>Time/Size-based deletion</strong> — delete old messages after X hours or X bytes<br>
+        🔹 <strong>Log compaction</strong> — keep only the latest message for each key (forever)
+      </div>
+      <div class="one-liner">
+        ✨ <em>Retention controls what stays. Deletion = "expire by age". Compaction = "keep only the latest per key".</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⏱️ Time-Based Retention (default)</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">log.retention.hours      = 168       <span style="color:#a0aec0;"># 7 days (default)</span>
+log.retention.minutes    = (override)
+log.retention.ms         = (most precise)</pre>
+      </div>
+      <div class="quote-box">
+        Old segments are deleted after the threshold. Most common policy.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">💾 Size-Based Retention</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">log.retention.bytes      = 1073741824  <span style="color:#a0aec0;"># 1 GB per partition</span></pre>
+      </div>
+      <div class="quote-box">
+        Once partition exceeds the size, oldest segments deleted. Often combined with time-based (whichever fires first).
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🗜️ Log Compaction (the magical one)</div>
+      <div class="quote-box">
+        With <strong>log.cleanup.policy = compact</strong>, Kafka keeps <strong>only the latest message per key</strong> — older messages with the same key are removed.<br><br>
+        Perfect for <strong>state snapshots</strong>: imagine a topic where each message is a user's current profile. You don't need history — only the latest.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎯 Compaction Example</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">Original log:
+  (user1, "name=Amit")
+  (user2, "name=John")
+  (user1, "name=Amit Rakhaiya")     ← newer
+  (user3, "name=Maria")
+  (user1, "name=Amit R.")           ← newest for user1
+
+After compaction:
+  (user2, "name=John")
+  (user3, "name=Maria")
+  (user1, "name=Amit R.")           ← only the latest</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🌟 When to Use Each</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">📅</span> Time-based deletion</div>
+          <div class="feature-desc">Logs, events, metrics — anything where older data loses value over time.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">🗜️</span> Log compaction</div>
+          <div class="feature-desc">User profiles, account balances, configuration changes — anything where you only care about the LATEST state per key.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">🔀</span> Both (compact + delete)</div>
+          <div class="feature-desc">Set <code>cleanup.policy=compact,delete</code> — keep latest per key, but also delete keys absent for X days.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎯 Famous Use Case</div>
+      <div class="quote-box">
+        Kafka's own <code>__consumer_offsets</code> topic uses <strong>log compaction</strong> — only the latest committed offset per (group, topic, partition) is kept.
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"<strong style="color:#f6ad55;">Retention controls history. Compaction controls state.</strong> Time-based deletion = "stream of events". Compaction = "table of latest values". Master both, and Kafka becomes both a queue AND a database."</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">log.retention.hours</span>
+        <span class="phrase-chip">cleanup.policy = delete or compact</span>
+        <span class="phrase-chip">Latest value per key (compaction)</span>
+        <span class="phrase-chip">Powers __consumer_offsets</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="question-card" id="q16">
+    <span class="q-number">QUESTION 16</span>
+    <div class="q-title">🔹 Partition Assignment Strategies</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        When multiple consumers in a group subscribe to a topic, Kafka must decide <strong>which consumer gets which partition</strong>. That's the job of the <strong>partition assignment strategy</strong> (also called the "assignor").
+      </div>
+      <div class="one-liner">
+        ✨ <em>Different strategies = different ways of dividing partitions among consumers fairly.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📦 The 4 Strategies</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> RangeAssignor (default before 2.4)</div>
+          <div class="feature-desc">
+            For each topic: divides partitions into ranges, assigns one range per consumer.<br>
+            Example: 6 partitions, 3 consumers → C1: P0-P1, C2: P2-P3, C3: P4-P5.<br>
+            ❌ Can be unbalanced if consumers subscribe to multiple topics with different partition counts.
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> RoundRobinAssignor</div>
+          <div class="feature-desc">
+            Distributes ALL partitions of ALL topics round-robin across consumers.<br>
+            Example: P0→C1, P1→C2, P2→C3, P3→C1, ...<br>
+            ✅ Better balanced across topics.<br>
+            ❌ Causes large reassignments on rebalance.
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> StickyAssignor</div>
+          <div class="feature-desc">
+            Like RoundRobin, but tries to <strong>preserve previous assignments</strong> across rebalances.<br>
+            ✅ Minimizes partition movement → less disruption.<br>
+            ❌ Still uses stop-the-world rebalancing.
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> CooperativeStickyAssignor (modern, recommended)</div>
+          <div class="feature-desc">
+            Sticky + <strong>incremental rebalancing</strong>.<br>
+            Only the consumers losing/gaining partitions pause briefly. Others keep working.<br>
+            ✅ <strong>Massive reduction in rebalance pain</strong>. Available since Kafka 2.4.<br>
+            🎯 <strong>Default since Kafka 3.x</strong> for new applications.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛠️ How to Configure</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">partition.assignment.strategy =
+  org.apache.kafka.clients.consumer.CooperativeStickyAssignor</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚠️ Why It Matters</div>
+      <div class="quote-box">
+        Bad assignment strategies → uneven load (some consumers idle, others overloaded). And every rebalance with non-cooperative strategies pauses the entire group, causing latency spikes. <strong>CooperativeStickyAssignor</strong> is the modern best practice.
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"<strong style="color:#f6ad55;">Use CooperativeStickyAssignor in modern setups</strong> — it's the only one that doesn't grind your consumers to a halt during rebalances. <strong style="color:#f6ad55;">'Rebalances should sting, not paralyze.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Range / RoundRobin / Sticky / Cooperative</span>
+        <span class="phrase-chip">Cooperative = incremental rebalancing</span>
+        <span class="phrase-chip">Modern default since 3.x</span>
+        <span class="phrase-chip">Minimize partition movement</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q17 -->
+  <div class="question-card" id="q17">
+    <span class="q-number">QUESTION 17</span>
+    <div class="q-title">🔹 Consumer Offset Management (auto vs manual commit)</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        Consumers must <strong>commit offsets</strong> so Kafka knows what they've read. There are two strategies:<br><br>
+        🔹 <strong>Auto-commit</strong> — Kafka commits in the background periodically<br>
+        🔹 <strong>Manual commit</strong> — your code calls <code>commitSync()</code> or <code>commitAsync()</code> explicitly
+      </div>
+      <div class="one-liner">
+        ✨ <em>Auto-commit = simple but lossy/duplicaty. Manual commit = correct but you do the bookkeeping.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚙️ Auto-Commit (default)</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">enable.auto.commit       = true
+auto.commit.interval.ms  = 5000     <span style="color:#a0aec0;"># every 5 sec</span></pre>
+      </div>
+      <div class="quote-box">
+        🔹 ✅ Simple — no code needed<br>
+        🔹 ❌ Risky for at-least-once: commit happens BEFORE message is fully processed<br>
+        🔹 ❌ Crashes between commits → unprocessed messages "lost"<br>
+        🎯 OK for prototypes; risky for production
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🔧 Manual Commit (recommended)</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">enable.auto.commit = false
+
+while (running) {
+    ConsumerRecords records = consumer.poll(Duration.ofMillis(100));
+    for (ConsumerRecord r : records) {
+        process(r);
+    }
+    consumer.commitSync();    <span style="color:#a0aec0;">// commit AFTER processing</span>
+}</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🚦 Two Manual Commit Modes</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> commitSync()</div>
+          <div class="feature-desc">Blocks until broker acknowledges. <strong>Safe</strong>, but slower. Best for batch processing where correctness &gt; throughput.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> commitAsync()</div>
+          <div class="feature-desc">Fires and forgets (with optional callback). <strong>Faster</strong>, but if it fails silently, may leave offsets uncommitted.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">⭐</span> Common pattern</div>
+          <div class="feature-desc">Use <code>commitAsync()</code> in the poll loop, but call <code>commitSync()</code> on shutdown to flush.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📊 Comparison</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">┌──────────────────┬───────────────────┬────────────────────┐
+│ Strategy         │ Risk              │ Use case           │
+├──────────────────┼───────────────────┼────────────────────┤
+│ auto-commit      │ Possible loss/dup │ Prototyping        │
+│ commitSync       │ None (but slower) │ Critical workloads │
+│ commitAsync      │ Silent failure    │ High throughput    │
+│ async + sync     │ Best balance      │ Production default │
+└──────────────────┴───────────────────┴────────────────────┘</pre>
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"<strong style="color:#f6ad55;">Process FIRST, commit AFTER</strong> — that's the at-least-once mantra. Auto-commit reverses it (commit before fully processing) → lost messages on crash. <strong style="color:#f6ad55;">'Manual commit = correctness in your hands.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">enable.auto.commit = false in production</span>
+        <span class="phrase-chip">commitSync vs commitAsync</span>
+        <span class="phrase-chip">Process then commit</span>
+        <span class="phrase-chip">Async in loop, sync on shutdown</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="question-card" id="q18">
+    <span class="q-number">QUESTION 18</span>
+    <div class="q-title">🔹 Consumer Rebalancing</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        <strong>Rebalancing</strong> is the process by which Kafka <strong>redistributes partitions among consumers</strong> in a group when membership changes. It happens when:<br><br>
+        🔹 A consumer joins or leaves the group<br>
+        🔹 A consumer crashes / heartbeat times out<br>
+        🔹 New partitions are added to a subscribed topic<br>
+        🔹 Subscribed topics list changes
+      </div>
+      <div class="one-liner">
+        ✨ <em>"Reshuffle the deck so each player gets a fair hand" — but during reshuffle, no one plays.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚠️ The Problem with Classic Rebalancing</div>
+      <div class="quote-box">
+        Default behavior is <strong>"stop-the-world"</strong>:<br>
+        1️⃣ All consumers stop processing<br>
+        2️⃣ They give up all partitions<br>
+        3️⃣ Group leader recomputes assignments<br>
+        4️⃣ Each consumer gets new partitions<br>
+        5️⃣ Processing resumes<br><br>
+        Even brief rebalances cause <strong>latency spikes &amp; lag bumps</strong>. With many consumers, can take 30+ seconds!
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚡ Cooperative Rebalancing (Modern Fix)</div>
+      <div class="quote-box">
+        Available since Kafka 2.4 (KIP-429). With <strong>CooperativeStickyAssignor</strong>:<br>
+        🔹 Only consumers <strong>losing or gaining</strong> partitions pause briefly<br>
+        🔹 The rest keep processing uninterrupted<br>
+        🔹 Rebalance happens in <strong>incremental phases</strong><br>
+        🔹 Massive reduction in rebalance impact
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚙️ Important Configurations</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">session.timeout.ms        = 45000  <span style="color:#a0aec0;"># consumer dies if no heartbeat</span>
+heartbeat.interval.ms     = 3000   <span style="color:#a0aec0;"># heartbeat frequency</span>
+max.poll.interval.ms      = 300000 <span style="color:#a0aec0;"># max time between polls</span>
+partition.assignment.strategy = CooperativeStickyAssignor</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🚨 Common Causes of Rebalances</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Long Processing</div>
+          <div class="feature-desc">Consumer takes longer than <code>max.poll.interval.ms</code> to process a batch → kicked out of group.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Network Issues</div>
+          <div class="feature-desc">Consumer can't send heartbeats → broker assumes it's dead.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Garbage Collection</div>
+          <div class="feature-desc">Long GC pauses block heartbeats → false eviction.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Scale Up/Down</div>
+          <div class="feature-desc">Adding/removing consumer instances triggers rebalance.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛡️ How to Minimize Pain</div>
+      <div class="quote-box">
+        🔹 Use <strong>CooperativeStickyAssignor</strong><br>
+        🔹 Use <strong>static membership</strong> (<code>group.instance.id</code>) for K8s — survives rolling restarts<br>
+        🔹 Tune <strong>max.poll.records</strong> to keep processing time short<br>
+        🔹 Increase <strong>max.poll.interval.ms</strong> if processing is genuinely slow<br>
+        🔹 Avoid long GC pauses — tune JVM
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Rebalances are <strong style="color:#f6ad55;">unavoidable but tameable</strong>. Use cooperative rebalancing + static membership + reasonable poll intervals — and your consumers stay smooth even during deployments. <strong style="color:#f6ad55;">'A bad rebalance can spike lag by minutes.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Stop-the-world rebalance</span>
+        <span class="phrase-chip">CooperativeStickyAssignor (KIP-429)</span>
+        <span class="phrase-chip">Static membership for stable IDs</span>
+        <span class="phrase-chip">max.poll.interval.ms timeout</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="question-card" id="q19">
+    <span class="q-number">QUESTION 19</span>
+    <div class="q-title">🔹 What is Kafka Connect?</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        <strong>Kafka Connect</strong> is a <strong>framework for moving data between Kafka and external systems</strong> (databases, file systems, cloud storage, search engines, etc.) — without writing custom integration code.
+      </div>
+      <div class="one-liner">
+        ✨ <em>"Plug-and-play data integration for Kafka." — declarative, scalable, no custom producers/consumers.</em>
+      </div>
+    </div>
+
+    <div class="analogy">
+      🔌 <strong>Analogy:</strong> Kafka Connect is like a <strong>universal power adapter</strong>. Instead of writing a custom plug for every appliance (database / S3 / Elasticsearch), you use a pre-built adapter ("connector"). Configure it via JSON, plug it in, data flows.
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🔄 Two Types of Connectors</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Source Connector (Data → Kafka)</div>
+          <div class="feature-desc">Pulls data FROM external systems INTO Kafka. Examples: Debezium (MySQL/Postgres CDC), JDBC Source, MongoDB Source, FilePulse.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Sink Connector (Kafka → Data)</div>
+          <div class="feature-desc">Pushes data FROM Kafka TO external systems. Examples: Elasticsearch Sink, S3 Sink, JDBC Sink, BigQuery Sink, MongoDB Sink.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎯 Famous Use Case — Debezium for CDC</div>
+      <div class="quote-box">
+        <strong>Change Data Capture (CDC)</strong>: Debezium reads MySQL/Postgres binlogs and publishes every INSERT/UPDATE/DELETE as Kafka events.<br><br>
+        Result: your database becomes a <strong>real-time event source</strong>. Other services subscribe to changes — no polling, no triggers, no batch ETL.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛠️ Configuration Example</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">{
+  <span style="color:#f6ad55;">"name"</span>: <span style="color:#f6ad55;">"jdbc-source-orders"</span>,
+  <span style="color:#f6ad55;">"config"</span>: {
+    <span style="color:#f6ad55;">"connector.class"</span>: <span style="color:#f6ad55;">"io.confluent.connect.jdbc.JdbcSourceConnector"</span>,
+    <span style="color:#f6ad55;">"connection.url"</span>: <span style="color:#f6ad55;">"jdbc:mysql://db:3306/shop"</span>,
+    <span style="color:#f6ad55;">"table.whitelist"</span>: <span style="color:#f6ad55;">"orders"</span>,
+    <span style="color:#f6ad55;">"topic.prefix"</span>: <span style="color:#f6ad55;">"db-"</span>,
+    <span style="color:#f6ad55;">"mode"</span>: <span style="color:#f6ad55;">"incrementing"</span>,
+    <span style="color:#f6ad55;">"incrementing.column.name"</span>: <span style="color:#f6ad55;">"id"</span>
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🌟 Why Use It?</div>
+      <div class="quote-box">
+        🔹 No custom producers/consumers — just config<br>
+        🔹 <strong>Distributed mode</strong> — runs as a cluster, scales horizontally, fault-tolerant<br>
+        🔹 <strong>Hundreds of connectors</strong> available (Confluent Hub)<br>
+        🔹 <strong>Exactly-once support</strong> in many connectors<br>
+        🔹 <strong>Schema integration</strong> via Schema Registry
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Kafka Connect = <strong style="color:#f6ad55;">'integration without code'</strong>. Config-driven, scalable, exactly-once. Combined with Debezium, your databases become first-class event sources. <strong style="color:#f6ad55;">'Stop writing one-off pipelines — declare them.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Source vs Sink connectors</span>
+        <span class="phrase-chip">Debezium for CDC</span>
+        <span class="phrase-chip">Distributed mode (HA cluster)</span>
+        <span class="phrase-chip">Config-driven, no code</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q20 -->
+  <div class="question-card" id="q20">
+    <span class="q-number">QUESTION 20</span>
+    <div class="q-title">🔹 What is Kafka Streams?</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        <strong>Kafka Streams</strong> is a <strong>Java library</strong> for building stream-processing applications on top of Kafka. You read from Kafka topics, transform/aggregate the data, and write the results back to Kafka — all within your normal Java app, no separate cluster needed.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Stream processing as a library — not a separate cluster like Spark or Flink.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🌟 What Makes It Different</div>
+      <div class="quote-box">
+        Unlike <strong>Apache Spark Streaming</strong> or <strong>Flink</strong> (which run as separate clusters), Kafka Streams is just a <strong>JAR you embed in your Java app</strong>. No new infrastructure to deploy.<br><br>
+        🔹 Just a Spring Boot app + Kafka Streams = stream-processing service<br>
+        🔹 Scales by running more instances (uses Kafka consumer groups under the hood)<br>
+        🔹 Stateful processing with built-in <strong>state stores</strong> (RocksDB)
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛠️ Simple Example</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;">StreamsBuilder builder = new StreamsBuilder();
+
+builder.stream(<span style="color:#f6ad55;">"orders"</span>)
+       .filter((k, v) -&gt; v.getAmount() &gt; 100)
+       .mapValues(order -&gt; enrich(order))
+       .to(<span style="color:#f6ad55;">"big-orders"</span>);
+
+KafkaStreams streams = new KafkaStreams(builder.build(), props);
+streams.start();</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎯 Capabilities</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Filter / Map / FlatMap</div>
+          <div class="feature-desc">Stateless transformations on streams.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> GroupBy + Aggregate</div>
+          <div class="feature-desc">Stateful aggregation: count, sum, average per key. Backed by local state store.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Windowing</div>
+          <div class="feature-desc">Tumbling, hopping, session windows — "count events per 5-minute window".</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Joins</div>
+          <div class="feature-desc">Stream-Stream, Stream-Table, Table-Table joins (for enrichment).</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">5</span> Exactly-Once Semantics</div>
+          <div class="feature-desc">Built-in EOS via Kafka transactions — read-process-write atomically.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">6</span> Interactive Queries</div>
+          <div class="feature-desc">Query state stores from your app — turn streams into queryable views.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📊 Stream vs Table (Duality)</div>
+      <div class="quote-box">
+        Kafka Streams treats data as either:<br>
+        🔹 <strong>KStream</strong> — append-only stream of events (e.g., page views)<br>
+        🔹 <strong>KTable</strong> — current state per key (e.g., user count per region) — backed by compacted topic<br><br>
+        These are <strong>dual</strong> — a stream can be aggregated into a table, a table can be turned into a stream of changes (CDC).
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚖️ When to Use Kafka Streams vs Spark/Flink</div>
+      <div class="quote-box">
+        🔹 <strong>Kafka Streams</strong> — when your stream processing fits within microservices. Lightweight, no extra cluster.<br>
+        🔹 <strong>Flink/Spark</strong> — for complex pipelines, ML integration, batch+stream unification, or when teams already use them.
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Kafka Streams = <strong style="color:#f6ad55;">'stream processing without the infrastructure tax'</strong>. It turns any Java service into a real-time data processor with a few lines of code. <strong style="color:#f6ad55;">'If your data lives in Kafka, process it in Kafka.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Library, not a cluster</span>
+        <span class="phrase-chip">KStream and KTable duality</span>
+        <span class="phrase-chip">Built-in exactly-once</span>
+        <span class="phrase-chip">RocksDB-backed state stores</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q21 -->
+  <div class="question-card" id="q21">
+    <span class="q-number">QUESTION 21</span>
+    <div class="q-title">🔹 Schema Registry & Avro</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Quick Definition</div>
+      <div class="quote-box">
+        Kafka stores raw bytes — it doesn't care about schema. But producers and consumers must agree on the format. <strong>Schema Registry</strong> is a centralized service that <strong>stores and versions schemas</strong> (Avro, Protobuf, JSON Schema) — ensuring producers and consumers stay compatible as schemas evolve.
+      </div>
+      <div class="one-liner">
+        ✨ <em>"Contract management for Kafka data" — schemas as a service.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">😱 The Problem It Solves</div>
+      <div class="quote-box">
+        Without Schema Registry:<br>
+        🔹 Producer adds a new field → consumer crashes parsing JSON<br>
+        🔹 No central place to know "what's the format of <code>orders</code> topic?"<br>
+        🔹 Schema documentation drifts out of sync<br><br>
+        With Schema Registry:<br>
+        🔹 Producer registers schema (with version)<br>
+        🔹 Consumer fetches schema by ID — knows exactly how to decode<br>
+        🔹 Compatibility rules prevent breaking changes
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛠️ How It Works</div>
+      <div class="quote-box">
+        1️⃣ Producer serializes message with schema → registers schema with registry → gets schema ID<br>
+        2️⃣ Producer prepends schema ID to message payload (5 bytes)<br>
+        3️⃣ Sends to Kafka<br>
+        4️⃣ Consumer receives message → reads schema ID → fetches schema from registry → deserializes
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📦 Avro — The Most Popular Format</div>
+      <div class="quote-box">
+        <strong>Apache Avro</strong> = compact binary format with schema. Schema describes fields, types, defaults.<br>
+        🔹 ✅ Compact (smaller than JSON)<br>
+        🔹 ✅ Schema evolution rules built-in<br>
+        🔹 ✅ Code generation possible<br>
+        🔹 ❌ Not human-readable
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛡️ Schema Compatibility Modes</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> BACKWARD (most common)</div>
+          <div class="feature-desc">New schema can read old data. Allows: adding optional fields, removing fields. Deploy <strong>consumers first</strong>.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> FORWARD</div>
+          <div class="feature-desc">Old schema can read new data. Deploy <strong>producers first</strong>.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> FULL</div>
+          <div class="feature-desc">Both backward AND forward compatible. Strongest guarantee.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> NONE</div>
+          <div class="feature-desc">No compatibility check. Use at your own risk.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛠️ Tools</div>
+      <div class="quote-box">
+        🔹 <strong>Confluent Schema Registry</strong> — most popular, free for development<br>
+        🔹 <strong>Apicurio</strong> — open-source alternative<br>
+        🔹 <strong>AWS Glue Schema Registry</strong> — managed cloud<br><br>
+        Supported formats: <strong>Avro, Protobuf, JSON Schema</strong>
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Schema Registry = <strong style="color:#f6ad55;">'API contracts for events'</strong>. Without it, schema changes break your consumers silently. <strong style="color:#f6ad55;">'Treat your event schemas like REST API contracts — versioned, documented, validated.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Centralized schema management</span>
+        <span class="phrase-chip">Avro / Protobuf / JSON Schema</span>
+        <span class="phrase-chip">BACKWARD / FORWARD / FULL compatibility</span>
+        <span class="phrase-chip">Schema ID in message header</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q22 -->
+  <div class="question-card" id="q22">
+    <span class="q-number">QUESTION 22</span>
+    <div class="q-title">🔹 Why is Kafka so fast?</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Purpose</div>
+      <div class="quote-box">
+        Kafka achieves <strong>millions of messages per second</strong> on commodity hardware — sometimes faster than in-memory systems. This isn't magic — it's a combination of clever design choices that exploit modern hardware and OS features.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Kafka cheats — it lets the OS do the heavy lifting.</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚡ The 6 Reasons Kafka is Fast</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Sequential Disk I/O</div>
+          <div class="feature-desc">Kafka writes to disk <strong>sequentially</strong> (append-only log). Sequential disk writes can be <strong>as fast as RAM</strong> — much faster than random writes. Hardware-friendly.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Zero-Copy via sendfile()</div>
+          <div class="feature-desc">When sending data to consumers, Kafka uses Linux's <code>sendfile()</code> system call. Data goes <strong>directly from disk to network socket</strong> — without copying to user space. Saves CPU and time.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> OS Page Cache</div>
+          <div class="feature-desc">Kafka relies on OS page cache instead of managing its own. Reads usually hit memory. <strong>Restarting Kafka doesn't lose the cache</strong> — only the OS knows.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Producer Batching</div>
+          <div class="feature-desc">Producer accumulates messages in memory (<code>batch.size</code>, <code>linger.ms</code>) and sends them as one big batch — fewer network calls, more data per call.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">5</span> Compression</div>
+          <div class="feature-desc">Compresses entire batches (gzip, snappy, lz4, zstd). Less network bandwidth, less disk space — usually a 2-10x reduction.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">6</span> Partitioning + Parallelism</div>
+          <div class="feature-desc">Partitions are independent. Multiple producers, multiple consumers, multiple brokers — all in parallel. Linear horizontal scaling.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🚀 Bonus Perf Tricks</div>
+      <div class="quote-box">
+        🔹 <strong>Pull-based consumers</strong> — consumers control rate, no broker buffering<br>
+        🔹 <strong>Binary protocol</strong> — efficient wire format<br>
+        🔹 <strong>No message indexing</strong> — just sequential offsets, O(1) lookup<br>
+        🔹 <strong>Asynchronous replication</strong> with batching
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Kafka's speed comes from <strong style="color:#f6ad55;">embracing the disk + leveraging the OS + batching everything</strong>. It treats memory as a cache, the disk as primary storage, and the network as a stream of batches. <strong style="color:#f6ad55;">'Sequential I/O + zero-copy + batching = millions of msg/sec.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Sequential disk I/O</span>
+        <span class="phrase-chip">Zero-copy (sendfile)</span>
+        <span class="phrase-chip">OS page cache</span>
+        <span class="phrase-chip">Batching + compression</span>
+        <span class="phrase-chip">Append-only log</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q23 -->
+  <div class="question-card" id="q23">
+    <span class="q-number">QUESTION 23</span>
+    <div class="q-title">🔹 Common Kafka Use Cases</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Purpose</div>
+      <div class="quote-box">
+        Kafka is general-purpose — but it shines in specific scenarios. Knowing the popular use cases helps you (a) recognize Kafka-shaped problems and (b) speak fluently in interviews.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🎯 The 8 Top Use Cases</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Activity Tracking (Kafka's Original Use Case)</div>
+          <div class="feature-desc">Capture every user click, page view, search. LinkedIn built Kafka for this. Feeds analytics, recommendations, A/B testing.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Log Aggregation</div>
+          <div class="feature-desc">Stream logs from hundreds of servers into Kafka, then forward to Elasticsearch / S3 / Splunk. Replaces traditional log shippers at scale.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Microservice Communication (Event-Driven)</div>
+          <div class="feature-desc">Services publish events; others react. Decouples producers from consumers. Foundation of modern event-driven architectures.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Stream Processing</div>
+          <div class="feature-desc">Real-time analytics, fraud detection, anomaly detection. Kafka Streams, Flink, or Spark Streaming consume Kafka topics.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">5</span> Event Sourcing</div>
+          <div class="feature-desc">Store every state change as an event. Rebuild current state by replaying events. Kafka's durable log is perfect for this.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">6</span> Change Data Capture (CDC)</div>
+          <div class="feature-desc">Debezium captures DB row changes and publishes to Kafka. Other services subscribe — no polling, no batch ETL.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">7</span> Metrics &amp; Monitoring Pipelines</div>
+          <div class="feature-desc">Stream metrics from apps → Kafka → Prometheus / time-series DB / dashboards. Used by Uber's M3, Netflix's Atlas.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">8</span> Buffer Between Producers and Consumers</div>
+          <div class="feature-desc">Burst-protection: producers don't overwhelm slower consumers. Kafka absorbs the spike, consumers drain at their pace.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">⚠️ When NOT to Use Kafka</div>
+      <div class="quote-box">
+        🔹 Low-volume task queues (RabbitMQ is better — simpler routing)<br>
+        🔹 RPC-style request-reply (use REST/gRPC)<br>
+        🔹 Tiny apps that don't need streaming<br>
+        🔹 Strict per-message ordering across many keys (use single partition or different system)
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"Kafka shines when you have <strong style="color:#f6ad55;">'high-volume streams of events with multiple consumers'</strong>. If your problem fits that shape, Kafka is the answer. If not, simpler tools may suffice. <strong style="color:#f6ad55;">'Right tool, right problem.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">Activity tracking, log aggregation</span>
+        <span class="phrase-chip">Event-driven microservices</span>
+        <span class="phrase-chip">CDC with Debezium</span>
+        <span class="phrase-chip">Event sourcing backbone</span>
+        <span class="phrase-chip">Burst protection / buffer</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q24 -->
+  <div class="question-card" id="q24">
+    <span class="q-number">QUESTION 24</span>
+    <div class="q-title">🔹 Important Producer & Consumer Configurations</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Purpose</div>
+      <div class="quote-box">
+        Kafka has 100+ config options. You don't need them all — but you MUST know the dozen that matter most for production. Interviewers ask about these constantly.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📤 Producer Configurations</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> bootstrap.servers</div>
+          <div class="feature-desc">Comma-separated list of brokers to connect to. <code>broker1:9092,broker2:9092</code></div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> acks</div>
+          <div class="feature-desc">0 / 1 / all — durability vs speed trade-off. Default: 1 (or "all" if idempotence enabled).</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> retries</div>
+          <div class="feature-desc">How many times to retry on failure. With idempotence on, set to <code>Integer.MAX_VALUE</code>.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> batch.size</div>
+          <div class="feature-desc">Max bytes per batch (default 16 KB). Larger = more throughput, more latency.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">5</span> linger.ms</div>
+          <div class="feature-desc">How long to wait for batch to fill (default 0). Increase to ~5-10ms for better batching.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">6</span> compression.type</div>
+          <div class="feature-desc">none / gzip / snappy / lz4 / zstd. <strong>lz4 or zstd</strong> = best balance.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">7</span> enable.idempotence</div>
+          <div class="feature-desc">true → no duplicates from retries. Default true since Kafka 3.0.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">8</span> key.serializer / value.serializer</div>
+          <div class="feature-desc">How to serialize key/value (StringSerializer, AvroSerializer, etc.).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📥 Consumer Configurations</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> bootstrap.servers</div>
+          <div class="feature-desc">Same as producer.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> group.id</div>
+          <div class="feature-desc">Consumer group identifier. Determines work-sharing.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> auto.offset.reset</div>
+          <div class="feature-desc">earliest / latest / none — what to do if no committed offset.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> enable.auto.commit</div>
+          <div class="feature-desc">true / false. Set <strong>false</strong> in production for manual offset commits.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">5</span> max.poll.records</div>
+          <div class="feature-desc">Max records returned per poll() call (default 500). Tune to fit your processing time.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">6</span> max.poll.interval.ms</div>
+          <div class="feature-desc">Max time between polls before consumer is considered dead (default 5 min).</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">7</span> session.timeout.ms</div>
+          <div class="feature-desc">How long without heartbeats before broker evicts consumer (default 45s).</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">8</span> fetch.min.bytes / fetch.max.wait.ms</div>
+          <div class="feature-desc">Tune fetch batching — wait for more bytes or up to N ms.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">9</span> isolation.level</div>
+          <div class="feature-desc">read_uncommitted (default) or read_committed (only see committed transactional messages).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛡️ Production-Ready Defaults</div>
+      <div class="quote-box" style="background:#1a202c;color:#e2e8f0;border-left-color:#c53030;font-family:Consolas,Monaco,monospace;font-style:normal;">
+<pre style="margin:0;color:#e2e8f0;"><span style="color:#a0aec0;"># Producer</span>
+acks=all
+enable.idempotence=true
+retries=2147483647
+linger.ms=10
+compression.type=lz4
+batch.size=32768
+
+<span style="color:#a0aec0;"># Consumer</span>
+enable.auto.commit=false
+auto.offset.reset=earliest
+max.poll.records=500
+isolation.level=read_committed
+partition.assignment.strategy=CooperativeStickyAssignor</pre>
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"<strong style="color:#f6ad55;">Configs are Kafka's superpower</strong> — same code, vastly different behavior. Master the dozen that matter, and you can tune Kafka for any workload. <strong style="color:#f6ad55;">'Defaults are good for getting started, not for production.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">acks + idempotence + retries</span>
+        <span class="phrase-chip">batch.size + linger.ms + compression</span>
+        <span class="phrase-chip">enable.auto.commit = false in prod</span>
+        <span class="phrase-chip">max.poll.interval.ms tuning</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q25 -->
+  <div class="question-card" id="q25">
+    <span class="q-number">QUESTION 25</span>
+    <div class="q-title">🔹 Kafka Security & Monitoring</div>
+
+    <div class="section">
+      <div class="section-heading">💡 Purpose</div>
+      <div class="quote-box">
+        In production, Kafka must be <strong>secure</strong> (auth, encryption, ACLs) and <strong>observable</strong> (lag, throughput, errors). Both come up frequently in senior interviews.
+      </div>
+      <div class="one-liner">
+        ✨ <em>Security: who can connect, what they can do. Monitoring: is everything healthy?</em>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛡️ Security — The 4 Pillars</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Encryption in Transit (SSL/TLS)</div>
+          <div class="feature-desc">Encrypts traffic between producers, consumers, and brokers. Prevents eavesdropping. Configured via <code>security.protocol=SSL</code>.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Authentication (SASL)</div>
+          <div class="feature-desc">
+            Verifies <em>who</em> the client is. Mechanisms:<br>
+            🔹 SASL/PLAIN (username + password)<br>
+            🔹 SASL/SCRAM (salted, hashed passwords)<br>
+            🔹 SASL/GSSAPI (Kerberos for enterprise)<br>
+            🔹 SASL/OAUTHBEARER (modern OAuth2)
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Authorization (ACLs)</div>
+          <div class="feature-desc">Controls <em>what</em> authenticated users can do. Per-topic, per-action: read, write, create, delete. Managed via <code>kafka-acls.sh</code> or Confluent RBAC.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Encryption at Rest</div>
+          <div class="feature-desc">Disk-level encryption (LUKS, KMS, cloud volumes). Kafka itself doesn't encrypt data on disk natively — rely on infra.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">📊 Monitoring — What to Watch</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">1</span> Consumer Lag (most critical metric)</div>
+          <div class="feature-desc">Difference between latest offset and committed offset. High lag = consumer can't keep up. Tools: <strong>Burrow</strong>, <strong>Kafka Lag Exporter</strong>, Confluent Control Center.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">2</span> Throughput (bytes/sec, msg/sec)</div>
+          <div class="feature-desc">Per-broker, per-topic. Identifies hot spots and capacity issues.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">3</span> Broker Health</div>
+          <div class="feature-desc">CPU, memory, disk, network. Disk usage especially — hitting full = brokers fail.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">4</span> Under-Replicated Partitions</div>
+          <div class="feature-desc">Partitions where some replicas are out of sync. Should be 0 in healthy cluster.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">5</span> Producer/Consumer Errors</div>
+          <div class="feature-desc">Failed sends, timeouts, retry counts. Spikes = something's wrong.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-title"><span class="feature-num">6</span> Request Latency</div>
+          <div class="feature-desc">p50/p99 latencies for produce and fetch requests. SLA visibility.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🛠️ Tools</div>
+      <div class="quote-box">
+        🔹 <strong>Confluent Control Center</strong> — full Kafka GUI (commercial)<br>
+        🔹 <strong>Conduktor / AKHQ / Kafka UI</strong> — free Kafka admin UIs<br>
+        🔹 <strong>JMX + Prometheus + Grafana</strong> — most popular open-source stack<br>
+        🔹 <strong>Burrow</strong> — LinkedIn's lag monitor<br>
+        🔹 <strong>Kafka Manager / CMAK</strong> — broker management
+      </div>
+    </div>
+
+    <div class="closing-hook">
+      <div class="label">CLOSING HOOK</div>
+      <div class="text">"In production, <strong style="color:#f6ad55;">consumer lag is the heartbeat</strong> — if it's growing, something is wrong. Pair lag monitoring with broker health, JMX metrics, and ACL-based security, and you have a production-grade Kafka deployment. <strong style="color:#f6ad55;">'Secure who connects, monitor what flows.'</strong>"</div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">🧠 Key Phrases to Drop</div>
+      <div class="key-phrases">
+        <span class="phrase-chip">SSL + SASL + ACLs</span>
+        <span class="phrase-chip">Consumer lag = heartbeat metric</span>
+        <span class="phrase-chip">Under-replicated partitions = warning</span>
+        <span class="phrase-chip">JMX + Prometheus + Grafana</span>
+        <span class="phrase-chip">Burrow for lag monitoring</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    📨 Apache Kafka Interview Prep · 25 Questions · Built for clarity &amp; memory
+  </div>
+
+</div>
+</body>
+</html>
