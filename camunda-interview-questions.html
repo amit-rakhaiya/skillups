@@ -160,6 +160,9 @@
     <a href="#q22">22. Custom Form Field Types</a>
     <a href="#q23">23. Business Objects in Camunda</a>
     <a href="#q24">24. Suspended Process Start</a>
+    <a href="#q25">25. JavaDelegate vs TaskListener vs Camunda 8</a>
+    <a href="#q26">26. Key Benefits of Upgrading to Camunda 8</a>
+    <a href="#q27">27. Camunda 8 Configurations</a>
   </div>
 </div>
 
@@ -771,6 +774,159 @@ public void handle(JobClient client, ActivatedJob job) {
     <tr><td>Initial User Task</td><td>Most common — process starts but waits for human action before proceeding</td></tr>
   </table>
   <div class="interview-tip"><strong>💡 Camunda 7 only:</strong> <code>runtimeService.createProcessInstanceBuilder().suspend()</code> existed in C7 — not available in C8.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q25 -->
+<div class="q-card" id="q25">
+  <span class="q-num">Q 25</span>
+  <div class="q-title">JavaDelegate vs TaskListener — and what replaced them in Camunda 8</div>
+  <div class="q-tags"><span class="q-tag">Camunda 7</span><span class="q-tag">Camunda 8</span><span class="q-tag">Job Worker</span><span class="q-tag">Migration</span></div>
+
+  <div class="sh">🔷 JavaDelegate (Camunda 7) — Service Task logic</div>
+  <pre><code>@Component("backgroundCheckDelegate")
+public class BackgroundCheckDelegate implements JavaDelegate {
+    public void execute(DelegateExecution execution) {
+        String name = (String) execution.getVariable("name");
+        execution.setVariable("backgroundCheckPassed", true);
+    }
+}</code></pre>
+  <p style="font-size:0.9em;color:#64748b;margin-bottom:14px;">BPMN: <code>&lt;serviceTask camunda:delegateExpression="${backgroundCheckDelegate}"&gt;</code></p>
+
+  <div class="sh">🔶 TaskListener (Camunda 7) — User Task lifecycle hook</div>
+  <pre><code>@Component("personInfoListener")
+public class PersonInfoListener implements TaskListener {
+    public void notify(DelegateTask task) {
+        String email = (String) task.getVariable("email");
+        // save to DB, send email, etc.
+        task.setVariable("listenerRan", true);
+    }
+}</code></pre>
+  <p style="font-size:0.9em;color:#64748b;margin-bottom:14px;">Triggered on: <code>create</code> | <code>assignment</code> | <code>complete</code> | <code>delete</code></p>
+
+  <div class="sh">📊 Key Difference</div>
+  <table class="data-table">
+    <tr><th></th><th>JavaDelegate</th><th>TaskListener</th></tr>
+    <tr><td>Attached to</td><td>Service Task</td><td>User Task</td></tr>
+    <tr><td>Purpose</td><td>Execute automated business logic</td><td>React to task lifecycle events</td></tr>
+    <tr><td>Trigger</td><td>Engine reaches the task</td><td>User action (create/assign/complete)</td></tr>
+    <tr><td>Completes task</td><td>Auto (engine does it)</td><td>No — user completes the task</td></tr>
+    <tr><td>Execution model</td><td>In-process, same JVM, same txn</td><td>In-process, same JVM, same txn</td></tr>
+  </table>
+
+  <div class="sh">⚙️ Camunda 8 — Both replaced by @JobWorker</div>
+  <pre><code>// Replaces JavaDelegate — Service Task
+@JobWorker(type = "backgroundCheck")
+public void handle(JobClient client, ActivatedJob job) {
+    String name = (String) job.getVariablesAsMap().get("name");
+    client.newCompleteCommand(job.getKey())
+          .variable("backgroundCheckPassed", true)
+          .send().join(); // must explicitly complete
+}
+
+// Replaces TaskListener — User Task "completing" event
+@JobWorker(type = "save-person-info")
+public void handlePersonInfo(JobClient client, ActivatedJob job) {
+    // BPMN: &lt;zeebe:taskListener eventType="completing" type="save-person-info"/&gt;
+    personService.savePerson(...);
+    client.newCompleteCommand(job.getKey()).send().join();
+}</code></pre>
+
+  <table class="data-table">
+    <tr><th></th><th>Camunda 7</th><th>Camunda 8</th></tr>
+    <tr><td>Service Task logic</td><td>JavaDelegate</td><td>@JobWorker</td></tr>
+    <tr><td>Task lifecycle</td><td>TaskListener</td><td>@JobWorker (task listener type)</td></tr>
+    <tr><td>Execution model</td><td>In-process, same JVM</td><td>Remote, gRPC to Zeebe</td></tr>
+    <tr><td>Transaction</td><td>JTA — auto rollback</td><td>No JTA — idempotency required</td></tr>
+    <tr><td>Complete job</td><td>Engine handles it</td><td>Worker must call newCompleteCommand()</td></tr>
+    <tr><td>Supported events</td><td>create, assignment, complete, delete</td><td>completing (more in newer versions)</td></tr>
+  </table>
+
+  <div class="interview-tip"><strong>💡 One-liner:</strong> Camunda 7 had two separate hooks — JavaDelegate for service tasks (in-process, same txn) and TaskListener for user task lifecycle. Camunda 8 unifies both as @JobWorker — remote over gRPC, outside the engine, always requiring explicit job completion.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q26 -->
+<div class="q-card" id="q26">
+  <span class="q-num">Q 26</span>
+  <div class="q-title">Key Benefits of Upgrading to Camunda 8</div>
+  <div class="q-tags"><span class="q-tag">Camunda 8</span><span class="q-tag">Migration</span><span class="q-tag">Architecture</span></div>
+
+  <table class="data-table">
+    <tr><th>#</th><th>Benefit</th><th>Detail</th></tr>
+    <tr><td>1</td><td><strong>Horizontal Scalability</strong></td><td>Zeebe is partitioned — add broker nodes, throughput scales linearly. Camunda 7 DB becomes bottleneck under load.</td></tr>
+    <tr><td>2</td><td><strong>High Throughput</strong></td><td>Zeebe uses append-only log (RocksDB) instead of relational DB writes — millions of process instances per day.</td></tr>
+    <tr><td>3</td><td><strong>Cloud-Native / K8s Ready</strong></td><td>Helm charts provided. Designed for containerized, auto-scaling environments. C7 was Tomcat/JBoss era.</td></tr>
+    <tr><td>4</td><td><strong>Decoupled Workers</strong></td><td>Workers are stateless microservices — scale independently. A crashing worker doesn't affect the engine or other workers.</td></tr>
+    <tr><td>5</td><td><strong>SaaS Option</strong></td><td>Camunda Cloud — zero infrastructure, start building in minutes without running Zeebe/Operate/Elasticsearch yourself.</td></tr>
+    <tr><td>6</td><td><strong>Built-in Connectors</strong></td><td>HTTP, Slack, Kafka, AWS, SendGrid — no Java code, configured directly in Modeler. C7 required custom code for everything.</td></tr>
+    <tr><td>7</td><td><strong>Better Observability</strong></td><td>History in Elasticsearch — full-text search, aggregations, no impact on runtime. C7 history in same DB slows under load.</td></tr>
+    <tr><td>8</td><td><strong>Multi-language Workers</strong></td><td>Official Zeebe clients: Java, Go, Node.js, Python, C#, Rust. C7 was Java-only for delegates.</td></tr>
+    <tr><td>9</td><td><strong>Active Development</strong></td><td>C7 community edition EOL 2025. All new features (connectors, AI, improved forms) go to C8 only.</td></tr>
+  </table>
+
+  <div class="sh">⚠️ When NOT to Upgrade</div>
+  <ul class="point-list">
+    <li><span class="pl-icon">❌</span><div>Strong JTA/ACID requirement across DB + engine — no equivalent in C8</div></li>
+    <li><span class="pl-icon">❌</span><div>Heavy Groovy scripts in BPMN — C8 supports FEEL only</div></li>
+    <li><span class="pl-icon">❌</span><div>ExecutionListeners — not supported in C8</div></li>
+    <li><span class="pl-icon">❌</span><div>Small scale (&lt; few hundred instances/day) — migration cost outweighs benefit</div></li>
+  </ul>
+
+  <div class="interview-tip"><strong>💡 One-liner:</strong> Camunda 8 is worth upgrading to when you need horizontal scale, cloud-native deployment, or multi-language worker support. The cost is losing JTA transactions and rewriting JavaDelegates/TaskListeners as @JobWorkers.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q27 -->
+<div class="q-card" id="q27">
+  <span class="q-num">Q 27</span>
+  <div class="q-title">Camunda 8 — Key Configurations</div>
+  <div class="q-tags"><span class="q-tag">Configuration</span><span class="q-tag">Spring Boot</span><span class="q-tag">Zeebe</span></div>
+
+  <div class="sh">1. application.properties — Zeebe Connection</div>
+  <pre><code># Zeebe connection
+zeebe.client.broker.gateway-address=localhost:26500
+zeebe.client.security.plaintext=true        # disable TLS for local dev
+
+# Worker tuning (optional)
+zeebe.client.worker.default-job-timeout=PT30S    # before Zeebe retries
+zeebe.client.worker.default-max-jobs-active=32   # max concurrent jobs per worker
+zeebe.client.worker.default-name=my-spring-worker</code></pre>
+
+  <div class="sh">2. Per-Worker via @JobWorker</div>
+  <pre><code>@JobWorker(
+    type = "save-person-info",
+    timeout = 30000,       // ms before Zeebe retries
+    maxJobsActive = 5,     // max concurrent executions
+    pollInterval = 1000,   // ms between polls
+    autoComplete = false   // must call newCompleteCommand() manually
+)
+public void handle(JobClient client, ActivatedJob job) { }</code></pre>
+
+  <div class="sh">3. Camunda Cloud (SaaS)</div>
+  <pre><code>zeebe.client.cloud.cluster-id=&lt;your-cluster-id&gt;
+zeebe.client.cloud.client-id=&lt;your-client-id&gt;
+zeebe.client.cloud.client-secret=&lt;your-secret&gt;
+zeebe.client.cloud.region=bru-2</code></pre>
+
+  <div class="sh">4. BPMN/DMN Auto-deploy on Startup</div>
+  <pre><code># Auto-deploy all BPMN and DMN from classpath
+spring.zeebe.resources.location=classpath*:*.bpmn,classpath*:*.dmn
+
+// Or manually via code:
+zeebeClient.newDeployResourceCommand()
+    .addResourceFromClasspath("sample-process.bpmn")
+    .addResourceFromClasspath("eligibility.dmn")
+    .send().join();</code></pre>
+
+  <div class="sh">5. Job Timeout vs Retry</div>
+  <table class="data-table">
+    <tr><th>Config</th><th>Meaning</th></tr>
+    <tr><td><code>timeout</code></td><td>How long Zeebe waits before retrying if worker doesn't complete the job</td></tr>
+    <tr><td><code>retries</code> (BPMN)</td><td>How many times Zeebe retries before raising an incident in Operate</td></tr>
+    <tr><td><code>backoff</code></td><td>Delay between retries (configurable in BPMN retry config)</td></tr>
+  </table>
+  <pre><code>&lt;!-- BPMN service task retry config --&gt;
+&lt;zeebe:taskDefinition type="backgroundCheck" retries="3"/&gt;</code></pre>
+
+  <div class="interview-tip"><strong>💡 Our POC:</strong> Uses only two lines — <code>gateway-address</code> and <code>plaintext=true</code>. For production, tune <code>maxJobsActive</code> and <code>timeout</code> per worker based on expected load and processing time.</div>
 </div>
 
 </div><!-- /container -->
