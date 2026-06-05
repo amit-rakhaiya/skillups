@@ -1,0 +1,178 @@
+/* ============================================================
+   SHARED SITE STYLES — Amit Rakhaiya Interview Prep Mini-Site
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --nav-bg: #0f172a;
+  --nav-accent: #38bdf8;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  color: #2d3748;
+  line-height: 1.7;
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+.site-nav {
+  background: var(--nav-bg);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+.site-nav .nav-brand {
+  font-size: 1em;
+  font-weight: 700;
+  color: var(--nav-accent);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.site-nav .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.site-nav .nav-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.82em;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.site-nav .nav-links a:hover,
+.site-nav .nav-links a.active {
+  background: rgba(56,189,248,0.15);
+  color: var(--nav-accent);
+}
+
+/* ── BACK TO HOME ────────────────────────────────────────── */
+.back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4a5568;
+  text-decoration: none;
+  font-size: 0.88em;
+  margin-bottom: 20px;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+.back-home:hover { color: #2d3748; }
+
+/* ── CODE BLOCKS ─────────────────────────────────────────── */
+pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 16px 20px;
+  border-radius: 10px;
+  overflow-x: auto;
+  font-size: 0.88em;
+  line-height: 1.6;
+  margin: 14px 0;
+}
+code { font-family: "Fira Code", "Cascadia Code", Consolas, monospace; }
+p code, li code {
+  background: #f1f5f9;
+  color: #c53030;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* ── TABLE ───────────────────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.92em;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.data-table th {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.85em;
+  letter-spacing: 0.5px;
+}
+.data-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:nth-child(even) td { background: #f8fafc; }
+
+/* ── DIAGRAM BOX ─────────────────────────────────────────── */
+.diagram {
+  background: #1e293b;
+  color: #94a3b8;
+  font-family: "Fira Code", Consolas, monospace;
+  font-size: 0.82em;
+  padding: 20px 24px;
+  border-radius: 10px;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 14px 0;
+  line-height: 1.6;
+}
+.diagram .hl { color: #38bdf8; }
+.diagram .ok { color: #4ade80; }
+.diagram .warn { color: #fb923c; }
+
+/* ── INTERVIEW TIP ───────────────────────────────────────── */
+.interview-tip {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border-left: 4px solid #f59e0b;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin: 16px 0;
+  font-size: 0.93em;
+}
+.interview-tip strong { color: #92400e; }
+
+/* ── BADGES ──────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.badge-green { background: #dcfce7; color: #166534; }
+.badge-red   { background: #fee2e2; color: #991b1b; }
+.badge-blue  { background: #dbeafe; color: #1e40af; }
+.badge-orange{ background: #ffedd5; color: #9a3412; }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.site-footer {
+  text-align: center;
+  padding: 32px 20px;
+  color: #94a3b8;
+  font-size: 0.82em;
+  margin-top: 40px;
+  border-top: 1px solid #e2e8f0;
+}

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amit Rakhaiya — Interview Prep Hub</title>
+<link rel="stylesheet" href="site.css">
+<style>
+  body { background: #f8fafc; padding-bottom: 40px; }
+
+  /* ── HERO ──────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f3460 100%);
+    color: white;
+    padding: 60px 24px 50px;
+    text-align: center;
+  }
+  .hero .avatar {
+    width: 90px; height: 90px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2em; font-weight: 800;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 0 4px rgba(56,189,248,0.3);
+  }
+  .hero h1 { font-size: 2.4em; font-weight: 800; margin-bottom: 4px; }
+  .hero .role {
+    font-size: 1.1em; color: #38bdf8; font-weight: 600; margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+  .hero .summary {
+    max-width: 680px; margin: 0 auto 22px;
+    color: #cbd5e1; font-size: 0.97em; line-height: 1.8;
+  }
+  .hero .meta {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 14px; font-size: 0.85em; color: #94a3b8; margin-bottom: 24px;
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 5px; }
+
+  /* availability badge */
+  .available-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(74,222,128,0.15);
+    border: 1.5px solid #4ade80;
+    color: #4ade80;
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-weight: 600; font-size: 0.9em;
+    margin-bottom: 28px;
+    animation: pulse-badge 2.5s ease-in-out infinite;
+  }
+  .available-badge .dot {
+    width: 9px; height: 9px;
+    background: #4ade80; border-radius: 50%;
+    animation: blink 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse-badge {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.3); }
+    50% { box-shadow: 0 0 0 8px rgba(74,222,128,0); }
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* skills chips */
+  .skills-row {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 8px; max-width: 780px; margin: 0 auto;
+  }
+  .skill-chip {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #e2e8f0;
+    padding: 5px 13px;
+    border-radius: 999px;
+    font-size: 0.8em;
+    font-weight: 500;
+  }
+
+  /* ── SEARCH ────────────────────────────── */
+  .search-section {
+    max-width: 780px; margin: -24px auto 36px;
+    padding: 0 20px; position: relative; z-index: 10;
+  }
+  .search-box {
+    width: 100%;
+    padding: 16px 52px 16px 20px;
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    font-size: 1em;
+    color: #1e293b;
+    outline: none;
+    background: white;
+  }
+  .search-box:focus { box-shadow: 0 8px 30px rgba(56,189,248,0.2); }
+  .search-icon {
+    position: absolute; right: 36px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em; color: #94a3b8; pointer-events: none;
+  }
+  .search-results {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    margin-top: 8px;
+    overflow: hidden;
+    display: none;
+  }
+  .search-results.visible { display: block; }
+  .search-result-item {
+    padding: 12px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background 0.1s;
+    text-decoration: none;
+    display: block;
+    color: #1e293b;
+  }
+  .search-result-item:hover { background: #f8fafc; }
+  .search-result-item:last-child { border-bottom: none; }
+  .sri-topic {
+    font-size: 0.75em; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px;
+    margin-bottom: 4px; display: inline-block;
+  }
+  .sri-q { font-weight: 600; font-size: 0.93em; color: #1e293b; }
+  .sri-snippet { font-size: 0.82em; color: #64748b; margin-top: 2px; }
+  .no-results { padding: 18px; text-align: center; color: #94a3b8; font-size: 0.9em; }
+
+  /* ── CONTAINER ─────────────────────────── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+  /* ── SECTION TITLE ─────────────────────── */
+  .section-title {
+    font-size: 1.4em; font-weight: 700; color: #0f172a;
+    margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after {
+    content: ''; flex: 1; height: 2px; background: #e2e8f0; border-radius: 2px;
+  }
+
+  /* ── TOPIC TILES ───────────────────────── */
+  .tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 50px;
+  }
+  .tile {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-top: 5px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .tile::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--tile-color);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .tile:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+  .tile:hover::before { opacity: 0.04; }
+  .tile .tile-icon { font-size: 3.2em; margin-bottom: 14px; display: block; }
+  .tile .tile-name { font-size: 1.1em; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+  .tile .tile-count { font-size: 0.82em; color: #64748b; font-weight: 500; }
+  .tile .tile-tag {
+    display: inline-block; margin-top: 12px;
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 0.75em; font-weight: 600;
+    background: var(--tile-bg); color: var(--tile-color);
+  }
+  /* tile colors */
+  .tile-spring  { --tile-color:#6db33f; --tile-bg:#f0fdf4; border-top-color:#6db33f; }
+  .tile-kafka   { --tile-color:#c53030; --tile-bg:#fff5f5; border-top-color:#c53030; }
+  .tile-ms      { --tile-color:#4299e1; --tile-bg:#ebf8ff; border-top-color:#4299e1; }
+  .tile-camunda { --tile-color:#e07b00; --tile-bg:#fff7ed; border-top-color:#e07b00; }
+
+  /* ── ABOUT STRIP ───────────────────────── */
+  .about-strip {
+    background: white;
+    border-radius: 16px;
+    padding: 36px 40px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    margin-bottom: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+  }
+  @media(max-width:700px){ .about-strip { grid-template-columns: 1fr; } }
+  .about-item h3 { font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 10px; }
+  .about-item .exp-num { font-size: 2.4em; font-weight: 800; color: #0f172a; line-height: 1; }
+  .about-item .exp-label { font-size: 0.85em; color: #64748b; margin-top: 3px; }
+  .about-item ul { list-style: none; }
+  .about-item ul li { font-size: 0.88em; color: #374151; padding: 3px 0; display: flex; align-items: center; gap: 6px; }
+  .about-item ul li::before { content: '▸'; color: #38bdf8; font-size: 0.8em; }
+
+  /* ── ACHIEVEMENTS ───────────────────────── */
+  .achievements {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    border-radius: 16px;
+    padding: 36px 40px;
+    margin-bottom: 50px;
+    color: white;
+  }
+  .achievements .section-title { color: white; }
+  .achievements .section-title::after { background: rgba(255,255,255,0.1); }
+  .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 16px; }
+  .ach-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .ach-card .ach-year { font-size: 0.75em; color: #38bdf8; font-weight: 600; margin-bottom: 6px; }
+  .ach-card .ach-title { font-size: 0.92em; font-weight: 600; color: #f1f5f9; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="index.html" class="nav-brand">⚡ Amit's Interview Prep</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">🏠 Home</a></li>
+    <li><a href="spring-boot-interview.html">🌱 Spring Boot</a></li>
+    <li><a href="apache-kafka-interview.html">📨 Kafka</a></li>
+    <li><a href="microservices-interview.html">🔧 Microservices</a></li>
+    <li><a href="camunda-interview-questions.html">⚙️ Camunda</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="avatar">AR</div>
+  <h1>Amit Rakhaiya</h1>
+  <div class="role">Product Architect · 13+ Years Experience</div>
+  <p class="summary">
+    Strategic architect specializing in Microservices, Event-Driven Design, and Enterprise Java.
+    Deep expertise in building highly scalable orchestration platforms using Camunda BPM,
+    designing distributed systems, and leading engineering teams from architecture to delivery.
+  </p>
+  <div class="meta">
+    <span>📞 +91-9624716900</span>
+    <span>✉️ amit.rakhaiya@gmail.com</span>
+    <span>📍 Ahmedabad, Gujarat, India</span>
+    <span>🔗 <a href="https://www.linkedin.com/in/amit-rakhaiya" target="_blank" style="color:#38bdf8">LinkedIn</a></span>
+  </div>
+  <div class="available-badge">
+    <span class="dot"></span>
+    Open to Job Opportunities &amp; Project Collaboration
+  </div>
+  <div class="skills-row">
+    <span class="skill-chip">Java</span>
+    <span class="skill-chip">Spring Boot</span>
+    <span class="skill-chip">Camunda BPM</span>
+    <span class="skill-chip">Microservices</span>
+    <span class="skill-chip">Apache Kafka</span>
+    <span class="skill-chip">Spring Data JPA</span>
+    <span class="skill-chip">BPMN 2.0</span>
+    <span class="skill-chip">Event-Driven Design</span>
+    <span class="skill-chip">AWS</span>
+    <span class="skill-chip">Docker</span>
+    <span class="skill-chip">Jenkins CI/CD</span>
+    <span class="skill-chip">Oracle / MySQL</span>
+    <span class="skill-chip">REST APIs</span>
+    <span class="skill-chip">Apache Camel</span>
+    <span class="skill-chip">Hazelcast</span>
+    <span class="skill-chip">AI-Assisted Dev</span>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-section">
+  <input class="search-box" id="searchInput" type="text"
+    placeholder="🔍  Search topics, questions, keywords... (e.g. 'gateway', 'consumer group', 'circuit breaker')"
+    autocomplete="off">
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- TOPIC TILES -->
+  <div class="section-title">📚 Interview Topics</div>
+  <div class="tiles-grid">
+    <a href="spring-boot-interview.html" class="tile tile-spring">
+      <span class="tile-icon">🌱</span>
+      <div class="tile-name">Spring Boot</div>
+      <div class="tile-count">Core framework, auto-config, actuator, security &amp; more</div>
+      <span class="tile-tag">Spring Ecosystem</span>
+    </a>
+    <a href="apache-kafka-interview.html" class="tile tile-kafka">
+      <span class="tile-icon">📨</span>
+      <div class="tile-name">Apache Kafka</div>
+      <div class="tile-count">Producers, consumers, topics, partitions, Streams</div>
+      <span class="tile-tag">Event Streaming</span>
+    </a>
+    <a href="microservices-interview.html" class="tile tile-ms">
+      <span class="tile-icon">🔧</span>
+      <div class="tile-name">Microservices</div>
+      <div class="tile-count">Patterns, resilience, service mesh, API gateway</div>
+      <span class="tile-tag">Architecture</span>
+    </a>
+    <a href="camunda-interview-questions.html" class="tile tile-camunda">
+      <span class="tile-icon">⚙️</span>
+      <div class="tile-name">Camunda BPM</div>
+      <div class="tile-count">Camunda 7 vs 8, Zeebe, workers, BPMN, DMN, gateways</div>
+      <span class="tile-tag">Workflow Engine</span>
+    </a>
+  </div>
+
+  <!-- ABOUT STRIP -->
+  <div class="about-strip">
+    <div class="about-item">
+      <h3>Experience</h3>
+      <div class="exp-num">13+</div>
+      <div class="exp-label">Years in Enterprise Java &amp; Architecture</div>
+    </div>
+    <div class="about-item">
+      <h3>Key Roles</h3>
+      <ul>
+        <li>Product Architect @ Nividous (2017–Present)</li>
+        <li>Sr. Software Engineer @ Sterlite Tech (2015–2017)</li>
+        <li>Software Engineer @ Acty System (2011–2015)</li>
+      </ul>
+    </div>
+    <div class="about-item">
+      <h3>Highlights</h3>
+      <ul>
+        <li>300+ RPA bots orchestrated via Camunda</li>
+        <li>25% DB latency reduction at Sterlite</li>
+        <li>JLPT N5 Certified (Japanese)</li>
+        <li>MCA — Nirma University (Distinction)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ACHIEVEMENTS -->
+  <div class="achievements">
+    <div class="section-title">🏆 Achievements &amp; Recognition</div>
+    <div class="ach-grid">
+      <div class="ach-card">
+        <div class="ach-year">🥇 July 2025 · Nividous</div>
+        <div class="ach-title">Special Technical Skills Award — Recognized for exceptional architectural capabilities and high-concurrency solutions for Control Center.</div>
+      </div>
+      <div class="ach-card">
+        <div class="ach-year">🏅 2024 · Nividous</div>
+        <div class="ach-title">Exceptional Performance Recognition — Dual appraisals in a single fiscal year for exceeding delivery expectations.</div>
+      </div>
+      <div class="ach-card">
+        <div class="ach-year">⚡ Aug 2023 · Nividous</div>
+        <div class="ach-title">Process Improvement Award — Spearheaded zero-touch release automation via Jenkins CI/CD and custom IzPack installer.</div>
+      </div>
+      <div class="ach-card">
+        <div class="ach-year">🌏 Language</div>
+        <div class="ach-title">JLPT N5 Certified — Japanese Language Proficiency for cross-cultural client collaboration.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="site-footer">
+  Built by Amit Rakhaiya · Interview Prep Hub · Ahmedabad, India
+</div>
+
+<script>
+// ── SEARCH DATA ─────────────────────────────────────────────────────────
+const searchData = [
+  // Spring Boot
+  { topic:"Spring Boot", color:"#6db33f", bg:"#f0fdf4", url:"spring-boot-interview.html",
+    q:"What is Spring Boot auto-configuration?", snippet:"Spring Boot auto-configures beans based on classpath and properties." },
+  { topic:"Spring Boot", color:"#6db33f", bg:"#f0fdf4", url:"spring-boot-interview.html",
+    q:"What is Spring Boot Actuator?", snippet:"Exposes production-ready endpoints for health, metrics, info." },
+  { topic:"Spring Boot", color:"#6db33f", bg:"#f0fdf4", url:"spring-boot-interview.html",
+    q:"What are Spring Boot starters?", snippet:"Pre-packaged dependency descriptors for common use cases." },
+  { topic:"Spring Boot", color:"#6db33f", bg:"#f0fdf4", url:"spring-boot-interview.html",
+    q:"Spring Boot vs Spring MVC?", snippet:"Spring Boot adds auto-config and embedded server on top of Spring MVC." },
+  { topic:"Spring Boot", color:"#6db33f", bg:"#f0fdf4", url:"spring-boot-interview.html",
+    q:"What is @SpringBootApplication?", snippet:"Combines @Configuration, @EnableAutoConfiguration, @ComponentScan." },
+  { topic:"Spring Boot", color:"#6db33f", bg:"#f0fdf4", url:"spring-boot-interview.html",
+    q:"What is Spring Security?", snippet:"Authentication and authorization framework for Spring applications." },
+  { topic:"Spring Boot", color:"#6db33f", bg:"#f0fdf4", url:"spring-boot-interview.html",
+    q:"What is Spring Data JPA?", snippet:"Abstraction over JPA repositories with derived query support." },
+  { topic:"Spring Boot", color:"#6db33f", bg:"#f0fdf4", url:"spring-boot-interview.html",
+    q:"What is @Transactional?", snippet:"Marks a method to run within a database transaction boundary." },
+  // Kafka
+  { topic:"Apache Kafka", color:"#c53030", bg:"#fff5f5", url:"apache-kafka-interview.html",
+    q:"What is Apache Kafka?", snippet:"Distributed event streaming platform for high-throughput messaging." },
+  { topic:"Apache Kafka", color:"#c53030", bg:"#fff5f5", url:"apache-kafka-interview.html",
+    q:"What is a Kafka topic?", snippet:"A named stream of records; partitioned for parallelism." },
+  { topic:"Apache Kafka", color:"#c53030", bg:"#fff5f5", url:"apache-kafka-interview.html",
+    q:"What is a consumer group?", snippet:"Group of consumers sharing partitions; each partition assigned to one consumer." },
+  { topic:"Apache Kafka", color:"#c53030", bg:"#fff5f5", url:"apache-kafka-interview.html",
+    q:"Kafka producer acknowledgment modes?", snippet:"acks=0 (no ack), acks=1 (leader), acks=all (all replicas)." },
+  { topic:"Apache Kafka", color:"#c53030", bg:"#fff5f5", url:"apache-kafka-interview.html",
+    q:"What is Kafka Streams?", snippet:"Client library for real-time stream processing on Kafka topics." },
+  { topic:"Apache Kafka", color:"#c53030", bg:"#fff5f5", url:"apache-kafka-interview.html",
+    q:"What is offset in Kafka?", snippet:"Unique sequential id of a record within a partition." },
+  // Microservices
+  { topic:"Microservices", color:"#4299e1", bg:"#ebf8ff", url:"microservices-interview.html",
+    q:"What is the Circuit Breaker pattern?", snippet:"Stops cascading failures by opening circuit after threshold failures." },
+  { topic:"Microservices", color:"#4299e1", bg:"#ebf8ff", url:"microservices-interview.html",
+    q:"What is an API Gateway?", snippet:"Single entry point for all microservice requests, handles routing and auth." },
+  { topic:"Microservices", color:"#4299e1", bg:"#ebf8ff", url:"microservices-interview.html",
+    q:"What is service discovery?", snippet:"Dynamic lookup of service instances using Eureka, Consul, etc." },
+  { topic:"Microservices", color:"#4299e1", bg:"#ebf8ff", url:"microservices-interview.html",
+    q:"Saga pattern vs 2PC?", snippet:"Saga uses compensating transactions; 2PC uses distributed locking." },
+  { topic:"Microservices", color:"#4299e1", bg:"#ebf8ff", url:"microservices-interview.html",
+    q:"What is CQRS?", snippet:"Separates read (Query) and write (Command) models for scalability." },
+  { topic:"Microservices", color:"#4299e1", bg:"#ebf8ff", url:"microservices-interview.html",
+    q:"What is Event Sourcing?", snippet:"Store all state changes as events; rebuild state by replaying them." },
+  // Camunda
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"Camunda 7 vs Camunda 8 — key differences?", snippet:"Camunda 7 embeds engine; Camunda 8 uses Zeebe via gRPC, no shared DB." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is Zeebe?", snippet:"Distributed workflow engine powering Camunda 8, communicates via gRPC." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is a Job Worker?", snippet:"Spring component annotated @JobWorker that handles Zeebe service tasks." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What are the types of gateways in BPMN?", snippet:"XOR (exclusive), AND (parallel), OR (inclusive), Event-based." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is DMN?", snippet:"Decision Model and Notation — table-based business rule evaluation." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What are boundary events?", snippet:"Events attached to task/sub-process boundary — interrupting or non-interrupting." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is an Escalation End Event?", snippet:"Throws escalation upward to parent process; terminates the sub-process." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is idempotency in Camunda?", snippet:"Check before save to prevent duplicate inserts on Zeebe job retries." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What are intermediate events?", snippet:"Sit between start/end — catching (wait) or throwing (send) during execution." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is execution scope?", snippet:"Variable visibility boundary — process, sub-process, or multi-instance." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is a connector in Camunda 8?", snippet:"Pre-built integration (HTTP, Slack, Kafka) configured in Modeler — no code needed." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is a Pool and Lane in BPMN?", snippet:"Pool = participant; Lane = role/department. Lanes are visual only in Camunda 8." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is JTA and why not in Camunda 8?", snippet:"Java Transaction API for distributed txns. Camunda 8 uses gRPC, outside JTA boundary." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"Ways to start a Camunda process?", snippet:"None start, Timer, Message, Signal, API, Tasklist, Call Activity, Event sub-process." },
+  { topic:"Camunda BPM", color:"#e07b00", bg:"#fff7ed", url:"camunda-interview-questions.html",
+    q:"What is sub-process in BPMN?", snippet:"Collapsed activity containing its own flow — embedded or call activity." },
+];
+
+// ── SEARCH LOGIC ────────────────────────────────────────────────────────
+const input = document.getElementById('searchInput');
+const resultsEl = document.getElementById('searchResults');
+
+input.addEventListener('input', () => {
+  const q = input.value.trim().toLowerCase();
+  if (!q) { resultsEl.classList.remove('visible'); return; }
+
+  const hits = searchData.filter(d =>
+    d.q.toLowerCase().includes(q) ||
+    d.snippet.toLowerCase().includes(q) ||
+    d.topic.toLowerCase().includes(q)
+  ).slice(0, 8);
+
+  if (!hits.length) {
+    resultsEl.innerHTML = '<div class="no-results">No results found — try a different keyword</div>';
+  } else {
+    resultsEl.innerHTML = hits.map(h => `
+      <a class="search-result-item" href="${h.url}">
+        <span class="sri-topic" style="background:${h.bg};color:${h.color}">${h.topic}</span>
+        <div class="sri-q">${h.q}</div>
+        <div class="sri-snippet">${h.snippet}</div>
+      </a>`).join('');
+  }
+  resultsEl.classList.add('visible');
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-section')) resultsEl.classList.remove('visible');
+});
+</script>
+</body>
+</html>

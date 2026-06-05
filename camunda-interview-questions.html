@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camunda BPM Interview Prep</title>
+<link rel="stylesheet" href="site.css">
+<style>
+  body {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    padding: 0 0 60px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 20px 0; }
+
+  .header {
+    background: linear-gradient(135deg, #c2410c 0%, #ea580c 60%, #e07b00 100%);
+    color: white;
+    padding: 44px 50px;
+    margin-bottom: 30px;
+  }
+  .header h1 { font-size: 2.2em; font-weight: 800; margin-bottom: 8px; }
+  .header p  { font-size: 1em; opacity: 0.9; }
+
+  /* TOC */
+  .toc {
+    background: white;
+    padding: 24px 32px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    margin-bottom: 30px;
+    border-left: 5px solid #ea580c;
+  }
+  .toc h2 { color: #c2410c; margin-bottom: 14px; font-size: 1.1em; font-weight: 700; }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+    gap: 6px 20px;
+  }
+  .toc-grid a {
+    color: #1e40af; text-decoration: none; font-size: 0.88em;
+    font-weight: 500; padding: 3px 0;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .toc-grid a:hover { color: #ea580c; }
+
+  /* Question Card */
+  .q-card {
+    background: white;
+    border-radius: 16px;
+    padding: 34px 38px;
+    margin-bottom: 28px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    border-top: 6px solid #ea580c;
+  }
+  .q-num {
+    display: inline-block;
+    background: #ea580c; color: white;
+    padding: 3px 13px; border-radius: 999px;
+    font-size: 0.78em; font-weight: 700;
+    margin-bottom: 10px; letter-spacing: 0.5px;
+  }
+  .q-title {
+    font-size: 1.5em; color: #1a202c;
+    margin-bottom: 20px; font-weight: 800;
+  }
+  .q-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
+  .q-tag {
+    background:#fff7ed; color:#c2410c;
+    padding:3px 10px; border-radius:999px;
+    font-size:0.75em; font-weight:600; border:1px solid #fed7aa;
+  }
+
+  /* Section heading */
+  .sh { font-size:1em; font-weight:700; color:#c2410c; margin:20px 0 10px; display:flex; align-items:center; gap:8px; }
+
+  /* Comparison grid */
+  .cmp {
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:14px 0;
+  }
+  @media(max-width:600px){ .cmp{grid-template-columns:1fr;} }
+  .cmp-box {
+    background:#f8fafc; border-radius:10px;
+    padding:16px 18px; border-top:3px solid #ea580c;
+  }
+  .cmp-box h4 { font-size:0.88em; font-weight:700; color:#1e293b; margin-bottom:8px; }
+  .cmp-box ul { list-style:none; }
+  .cmp-box ul li { font-size:0.85em; color:#374151; padding:3px 0; display:flex; gap:6px; }
+  .cmp-box ul li::before { content:'▸'; color:#ea580c; flex-shrink:0; }
+
+  /* flow diagram */
+  .flow {
+    background:#1e293b; color:#94a3b8;
+    font-family:"Fira Code",Consolas,monospace;
+    font-size:0.8em; padding:20px 24px;
+    border-radius:10px; overflow-x:auto;
+    white-space:pre; margin:14px 0; line-height:1.7;
+  }
+  .flow .hl  { color:#38bdf8; }
+  .flow .ok  { color:#4ade80; }
+  .flow .warn{ color:#fb923c; }
+  .flow .dim { color:#475569; }
+
+  /* inline highlighted list */
+  .point-list { list-style:none; margin:10px 0; }
+  .point-list li {
+    padding:8px 0; border-bottom:1px solid #f1f5f9;
+    font-size:0.93em; display:flex; gap:10px; align-items:flex-start;
+  }
+  .point-list li:last-child { border-bottom:none; }
+  .point-list .pl-icon { font-size:1.1em; flex-shrink:0; margin-top:1px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="index.html" class="nav-brand">⚡ Amit's Interview Prep</a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="spring-boot-interview.html">🌱 Spring Boot</a></li>
+    <li><a href="apache-kafka-interview.html">📨 Kafka</a></li>
+    <li><a href="microservices-interview.html">🔧 Microservices</a></li>
+    <li><a href="camunda-interview-questions.html" class="active">⚙️ Camunda</a></li>
+  </ul>
+</nav>
+
+<div class="header">
+  <h1>⚙️ Camunda BPM Interview Prep</h1>
+  <p>Camunda 7 vs 8 · Zeebe · BPMN 2.0 · DMN · Workers · Gateways · Sub-processes · Escalation</p>
+</div>
+
+<div class="container">
+<a href="index.html" class="back-home">← Back to Home</a>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>📋 Table of Contents</h2>
+  <div class="toc-grid">
+    <a href="#q1">1. What is Camunda? Web Apps</a>
+    <a href="#q2">2. Camunda Cloud vs Self-Managed</a>
+    <a href="#q3">3. Camunda 7 vs Camunda 8</a>
+    <a href="#q4">4. What is BPM vs Workflow vs jBPM</a>
+    <a href="#q5">5. What is a Job Worker?</a>
+    <a href="#q6">6. gRPC vs REST</a>
+    <a href="#q7">7. Ways to Start a Process</a>
+    <a href="#q8">8. BPMN Task vs Activity</a>
+    <a href="#q9">9. User Task vs Manual Task</a>
+    <a href="#q10">10. Gateways — All Types</a>
+    <a href="#q11">11. What is DMN?</a>
+    <a href="#q12">12. Pool and Lane</a>
+    <a href="#q13">13. Intermediate Events</a>
+    <a href="#q14">14. Boundary Events</a>
+    <a href="#q15">15. Sub-process &amp; Escalation Pattern</a>
+    <a href="#q16">16. Execution Scope</a>
+    <a href="#q17">17. Process Instance vs Multi-Instance</a>
+    <a href="#q18">18. What is JTA?</a>
+    <a href="#q19">19. Idempotency Pattern</a>
+    <a href="#q20">20. Business Key</a>
+    <a href="#q21">21. Connectors</a>
+    <a href="#q22">22. Custom Form Field Types</a>
+    <a href="#q23">23. Business Objects in Camunda</a>
+    <a href="#q24">24. Suspended Process Start</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q1 -->
+<div class="q-card" id="q1">
+  <span class="q-num">Q 01</span>
+  <div class="q-title">What are the Web Applications offered by Camunda?</div>
+  <div class="q-tags"><span class="q-tag">Camunda Platform</span><span class="q-tag">Web Apps</span></div>
+  <table class="data-table">
+    <tr><th>App</th><th>Purpose</th><th>Camunda 7</th><th>Camunda 8</th></tr>
+    <tr><td><strong>Operate</strong></td><td>Monitor &amp; manage running process instances, inspect variables, cancel/retry</td><td>Cockpit</td><td>✅ Operate</td></tr>
+    <tr><td><strong>Tasklist</strong></td><td>Human task management — fill forms, complete user tasks</td><td>Tasklist</td><td>✅ Tasklist</td></tr>
+    <tr><td><strong>Optimize</strong></td><td>Process analytics, KPIs, bottleneck detection (Enterprise only)</td><td>Optimize</td><td>✅ Optimize</td></tr>
+    <tr><td><strong>Modeler</strong></td><td>BPMN/DMN designer, deploy to Zeebe</td><td>Modeler</td><td>✅ Modeler 5.x</td></tr>
+    <tr><td><strong>Identity</strong></td><td>User/role management (Camunda 8 only)</td><td>❌</td><td>✅ Identity</td></tr>
+  </table>
+  <div class="interview-tip"><strong>💡 Interview Tip:</strong> In Camunda 8, history is stored in <strong>Elasticsearch</strong> and queried by Operate — not in a relational DB. This separates runtime from history concerns.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q2 -->
+<div class="q-card" id="q2">
+  <span class="q-num">Q 02</span>
+  <div class="q-title">Camunda Cloud (SaaS) vs Self-Managed</div>
+  <div class="q-tags"><span class="q-tag">Deployment</span><span class="q-tag">Zeebe</span></div>
+  <div class="cmp">
+    <div class="cmp-box">
+      <h4>☁️ Camunda Cloud (SaaS)</h4>
+      <ul>
+        <li>Fully managed by Camunda on AWS</li>
+        <li>Zero infrastructure setup</li>
+        <li>Zeebe, Operate, Tasklist, Optimize hosted</li>
+        <li>Connect via client credentials (OAuth)</li>
+        <li>Best for: quick start, no ops team</li>
+      </ul>
+    </div>
+    <div class="cmp-box">
+      <h4>🖥️ Self-Managed</h4>
+      <ul>
+        <li>You run Zeebe + all apps on Kubernetes</li>
+        <li>Helm charts provided by Camunda</li>
+        <li>Full control over data &amp; scaling</li>
+        <li>Can run locally (dev) without Docker</li>
+        <li>Best for: enterprise, compliance, on-prem</li>
+      </ul>
+    </div>
+  </div>
+  <div class="interview-tip"><strong>💡 Our POC:</strong> Self-Managed locally — Zeebe on port 26500, Operate/Tasklist on 8080, Spring Boot app on 8082.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q3 -->
+<div class="q-card" id="q3">
+  <span class="q-num">Q 03</span>
+  <div class="q-title">Camunda 7 vs Camunda 8 — Key Differences</div>
+  <div class="q-tags"><span class="q-tag">Architecture</span><span class="q-tag">Migration</span><span class="q-tag">Zeebe</span></div>
+
+  <div class="sh">🏗️ Architecture</div>
+  <div class="flow"><span class="hl">Camunda 7:</span>
+┌─────────────────────────────┐
+│  Spring Boot App JVM        │
+│  ├── Your Code              │
+│  ├── Camunda Engine (JAR)   │  <span class="ok">← embedded, same JVM</span>
+│  └── Your DB (Postgres/MySQL│
+└─────────────────────────────┘
+
+<span class="hl">Camunda 8:</span>
+┌──────────────┐  <span class="warn">gRPC :26500</span>  ┌─────────────────┐
+│ Spring Boot  │ ──────────────▶│  Zeebe Engine   │
+│ App (client) │                │  (Go binary)    │
+└──────────────┘                │  RocksDB storage│
+                                └─────────────────┘</div>
+
+  <div class="sh">📊 Feature Comparison</div>
+  <table class="data-table">
+    <tr><th>Feature</th><th>Camunda 7</th><th>Camunda 8 / Zeebe</th></tr>
+    <tr><td>Engine location</td><td>Embedded in app</td><td>Separate cluster (cannot embed)</td></tr>
+    <tr><td>Communication</td><td>Direct Java API (in-process)</td><td>gRPC over network</td></tr>
+    <tr><td>Database</td><td>Required (MySQL/Postgres/Oracle)</td><td>Zeebe owns storage (RocksDB)</td></tr>
+    <tr><td>Worker model</td><td>External Task — poll</td><td>Job Worker — push/stream</td></tr>
+    <tr><td>Transactions</td><td>JTA (same DB txn)</td><td>No JTA → idempotency pattern</td></tr>
+    <tr><td>Scalability</td><td>Vertical (DB bottleneck)</td><td>Horizontal (partitioned)</td></tr>
+    <tr><td>History</td><td>Same DB (ACT_HI_* tables)</td><td>Elasticsearch (via Operate)</td></tr>
+    <tr><td>Script tasks</td><td>Groovy, JUEL, JS</td><td>FEEL only</td></tr>
+    <tr><td>Java API</td><td>RuntimeService, TaskService</td><td>ZeebeClient</td></tr>
+    <tr><td>Worker annotation</td><td>@ExternalTaskHandler</td><td>@JobWorker</td></tr>
+    <tr><td>Delegate</td><td>JavaDelegate</td><td>Not applicable</td></tr>
+    <tr><td>Connectors</td><td>Custom plugins only</td><td>Built-in (HTTP, Slack, Kafka…)</td></tr>
+  </table>
+
+  <div class="sh">🔄 Migration Mapping</div>
+  <table class="data-table">
+    <tr><th>Camunda 7</th><th>Camunda 8 Equivalent</th></tr>
+    <tr><td>JavaDelegate</td><td>@JobWorker</td></tr>
+    <tr><td>@Autowired RuntimeService</td><td>ZeebeClient</td></tr>
+    <tr><td>TaskListener</td><td>Task Listener Job Worker</td></tr>
+    <tr><td>JTA rollback</td><td>Idempotency + compensation</td></tr>
+    <tr><td>Groovy scripts in BPMN</td><td>FEEL expressions</td></tr>
+    <tr><td>ACT_HI_* history tables</td><td>Elasticsearch index</td></tr>
+  </table>
+  <div class="interview-tip"><strong>💡 One-liner:</strong> "Camunda 7 embeds the engine with DB-backed JTA transactions. Camunda 8 uses Zeebe — a separate distributed engine over gRPC, no shared DB, horizontal scaling, requiring idempotency instead of transactions."</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q4 -->
+<div class="q-card" id="q4">
+  <span class="q-num">Q 04</span>
+  <div class="q-title">BPM vs Workflow vs jBPM — What's the difference?</div>
+  <div class="q-tags"><span class="q-tag">Concepts</span></div>
+  <table class="data-table">
+    <tr><th>Term</th><th>Scope</th><th>Focus</th></tr>
+    <tr><td><strong>Workflow</strong></td><td>Narrow — task routing</td><td>Who does what, in what order</td></tr>
+    <tr><td><strong>BPM (Business Process Management)</strong></td><td>Broad — end-to-end</td><td>Model, automate, monitor, optimize entire business processes</td></tr>
+    <tr><td><strong>jBPM</strong></td><td>Open-source Java BPM engine by Red Hat</td><td>Competitor to Camunda 7; uses KIE server, Drools rules engine</td></tr>
+    <tr><td><strong>Camunda</strong></td><td>BPM platform</td><td>BPMN 2.0 standard, better developer tooling, more active community than jBPM</td></tr>
+  </table>
+  <div class="interview-tip"><strong>💡 Key distinction:</strong> All workflow systems are BPM, but not all BPM is just workflow. BPM adds monitoring, optimization, and governance on top of pure task routing.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q5 -->
+<div class="q-card" id="q5">
+  <span class="q-num">Q 05</span>
+  <div class="q-title">What is a Job Worker in Camunda 8?</div>
+  <div class="q-tags"><span class="q-tag">Zeebe</span><span class="q-tag">Spring Boot</span><span class="q-tag">@JobWorker</span></div>
+  <p style="margin-bottom:14px;font-size:0.95em;">A Job Worker is a Spring component that subscribes to a specific job type in Zeebe and handles service task execution.</p>
+  <pre><code>@Slf4j
+@Component
+public class BackgroundCheckWorker {
+
+    @JobWorker(type = "backgroundCheck")
+    public void handle(JobClient client, ActivatedJob job) {
+        String name = (String) job.getVariablesAsMap().get("name");
+        log.info("Running background check for: {}", name);
+
+        client.newCompleteCommand(job.getKey())
+              .variable("backgroundCheckPassed", true)
+              .send().join();
+    }
+}</code></pre>
+  <table class="data-table">
+    <tr><th>Concept</th><th>Detail</th></tr>
+    <tr><td>Import</td><td><code>io.camunda.zeebe.spring.client.annotation.JobWorker</code></td></tr>
+    <tr><td>type</td><td>Must match service task type in BPMN</td></tr>
+    <tr><td>ActivatedJob</td><td>Contains job key, variables, process info</td></tr>
+    <tr><td>Must always call</td><td><code>newCompleteCommand()</code> or <code>newFailCommand()</code></td></tr>
+    <tr><td>Without complete</td><td>Zeebe retries indefinitely</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q6 -->
+<div class="q-card" id="q6">
+  <span class="q-num">Q 06</span>
+  <div class="q-title">gRPC vs REST — and how Camunda 8 uses gRPC</div>
+  <div class="q-tags"><span class="q-tag">Architecture</span><span class="q-tag">gRPC</span><span class="q-tag">Protocol Buffers</span></div>
+  <table class="data-table">
+    <tr><th></th><th>REST</th><th>gRPC</th></tr>
+    <tr><td>Protocol</td><td>HTTP/1.1</td><td>HTTP/2</td></tr>
+    <tr><td>Serialization</td><td>JSON (text)</td><td>Protocol Buffers (binary)</td></tr>
+    <tr><td>Performance</td><td>Moderate</td><td>High (smaller payload, multiplexed)</td></tr>
+    <tr><td>Streaming</td><td>Polling/SSE</td><td>Native bidirectional streaming</td></tr>
+    <tr><td>Contract</td><td>OpenAPI (optional)</td><td>.proto file (required)</td></tr>
+    <tr><td>Browser support</td><td>✅ Native</td><td>❌ Requires proxy (grpc-web)</td></tr>
+  </table>
+  <div class="sh">How it works in our POC</div>
+  <p style="font-size:0.93em;">Every <code>@JobWorker</code> and <code>client.newCompleteCommand()</code> is a gRPC call to <code>localhost:26500</code>. The Zeebe Spring SDK handles this transparently — you never write gRPC code directly.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q7 -->
+<div class="q-card" id="q7">
+  <span class="q-num">Q 07</span>
+  <div class="q-title">How many ways can you start a Camunda 8 process?</div>
+  <div class="q-tags"><span class="q-tag">Process Instantiation</span></div>
+  <ul class="point-list">
+    <li><span class="pl-icon">1️⃣</span><div><strong>None Start Event</strong> — Triggered via ZeebeClient API: <code>newCreateInstanceCommand().bpmnProcessId(...).send()</code></div></li>
+    <li><span class="pl-icon">2️⃣</span><div><strong>Timer Start Event</strong> — Auto-start on schedule. Use <code>timeDuration</code> for delay or <code>timeCycle</code> for recurring (cron-like).</div></li>
+    <li><span class="pl-icon">3️⃣</span><div><strong>Message Start Event</strong> — Starts when a named message arrives: <code>newPublishMessageCommand().messageName("loan-received")</code></div></li>
+    <li><span class="pl-icon">4️⃣</span><div><strong>Signal Start Event</strong> — Broadcast signal starts multiple process instances simultaneously.</div></li>
+    <li><span class="pl-icon">5️⃣</span><div><strong>REST API (Zeebe Gateway)</strong> — <code>POST /v1/process-instances</code> with process ID and variables.</div></li>
+    <li><span class="pl-icon">6️⃣</span><div><strong>Camunda Tasklist / Operate UI</strong> — Manually start from UI for testing.</div></li>
+    <li><span class="pl-icon">7️⃣</span><div><strong>Form-linked Start (Tasklist)</strong> — User fills a start form in Tasklist, submit triggers process start with form variables.</div></li>
+    <li><span class="pl-icon">8️⃣</span><div><strong>Call Activity</strong> — Parent process instantiates child process via <code>&lt;callActivity calledElement="..."&gt;</code></div></li>
+    <li><span class="pl-icon">9️⃣</span><div><strong>Event Sub-process</strong> — Triggered by timer/message/signal/error event within a running process scope.</div></li>
+  </ul>
+  <div class="interview-tip"><strong>💡 Our POC:</strong> None Start Event — Tasklist renders person.form, on submit Zeebe API starts the process with form variables.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q8 -->
+<div class="q-card" id="q8">
+  <span class="q-num">Q 08</span>
+  <div class="q-title">What is a Camunda Task vs Activity?</div>
+  <div class="q-tags"><span class="q-tag">BPMN</span></div>
+  <p style="font-size:0.93em;margin-bottom:14px;"><strong>Activity</strong> = broad term for any work item in BPMN. <strong>Task</strong> = atomic (leaf-level) activity with no sub-flow.</p>
+  <table class="data-table">
+    <tr><th>Type</th><th>Description</th><th>Camunda 8 Support</th></tr>
+    <tr><td><strong>Service Task</strong></td><td>Automated — handled by a Job Worker or Connector</td><td>✅</td></tr>
+    <tr><td><strong>User Task</strong></td><td>Requires human input via Tasklist form</td><td>✅</td></tr>
+    <tr><td><strong>Manual Task</strong></td><td>Offline human work, no system interaction</td><td>✅ (no form)</td></tr>
+    <tr><td><strong>Business Rule Task</strong></td><td>Evaluates a DMN decision table</td><td>✅</td></tr>
+    <tr><td><strong>Script Task</strong></td><td>Inline FEEL expression execution</td><td>✅ (FEEL only)</td></tr>
+    <tr><td><strong>Send Task</strong></td><td>Sends a message to another process</td><td>✅</td></tr>
+    <tr><td><strong>Receive Task</strong></td><td>Waits for an incoming message</td><td>✅</td></tr>
+    <tr><td><strong>Sub-process</strong></td><td>Collapsed activity with its own internal flow</td><td>✅</td></tr>
+    <tr><td><strong>Call Activity</strong></td><td>Calls a separately deployed child process</td><td>✅</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q9 -->
+<div class="q-card" id="q9">
+  <span class="q-num">Q 09</span>
+  <div class="q-title">User Task vs Manual Task</div>
+  <div class="q-tags"><span class="q-tag">BPMN Tasks</span></div>
+  <div class="cmp">
+    <div class="cmp-box">
+      <h4>👤 User Task</h4>
+      <ul>
+        <li>System-assisted human task</li>
+        <li>Appears in Tasklist for assignment</li>
+        <li>Linked to a Form (Camunda Form or external)</li>
+        <li>Variables captured on form submit</li>
+        <li>Can have task listeners</li>
+        <li><em>Example: Manager reviews loan application</em></li>
+      </ul>
+    </div>
+    <div class="cmp-box">
+      <h4>✋ Manual Task</h4>
+      <ul>
+        <li>Completely offline human work</li>
+        <li>No system interaction whatsoever</li>
+        <li>Does NOT appear in Tasklist</li>
+        <li>No form, no variables captured</li>
+        <li>Process continues automatically</li>
+        <li><em>Example: Print and file a paper document</em></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q10 -->
+<div class="q-card" id="q10">
+  <span class="q-num">Q 10</span>
+  <div class="q-title">Gateways in BPMN — All Types Explained</div>
+  <div class="q-tags"><span class="q-tag">BPMN</span><span class="q-tag">Gateway</span><span class="q-tag">Flow Control</span></div>
+
+  <table class="data-table">
+    <tr><th>Gateway</th><th>Symbol</th><th>Split behaviour</th><th>Join behaviour</th></tr>
+    <tr><td><strong>XOR (Exclusive)</strong></td><td>✕ or ◇</td><td>Exactly ONE path fires (first matching condition)</td><td>Passes first arriving token</td></tr>
+    <tr><td><strong>AND (Parallel)</strong></td><td>+</td><td>ALL paths fire simultaneously</td><td>Waits for ALL incoming tokens</td></tr>
+    <tr><td><strong>OR (Inclusive)</strong></td><td>◯</td><td>ONE or MORE paths fire based on conditions</td><td>Waits for all active paths</td></tr>
+    <tr><td><strong>Event-Based</strong></td><td>⬡</td><td>Waits for first event (timer/message) to occur</td><td>N/A (catching only)</td></tr>
+  </table>
+
+  <div class="sh">🔍 XOR vs OR — Common Interview Trap</div>
+  <div class="flow"><span class="hl">XOR:</span> 3 paths, conditions: A=true, B=true, C=false
+  → Only ONE fires → <span class="ok">Path A wins</span> (first matching)
+
+<span class="hl">OR:</span>  3 paths, conditions: A=true, B=true, C=false
+  → BOTH A and B fire → <span class="ok">two parallel tokens</span>
+  → OR join waits for both to complete</div>
+
+  <div class="sh">📌 Event-Based Gateway</div>
+  <div class="flow"><span class="hl">Process reaches Event-Based Gateway</span>
+         │
+         ├── ⏱️ Timer (3 days) ─── no response received
+         └── 📨 Message ──────── payment confirmed
+
+  Whichever fires FIRST wins → other is cancelled</div>
+
+  <div class="interview-tip"><strong>💡 In our POC:</strong> XOR gateway after Eligibility Check (routes on eligibility=true/false). AND split runs Manager Review + Background Check in parallel. XOR merge before AND join collapses escalation/normal paths to avoid deadlock.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q11 -->
+<div class="q-card" id="q11">
+  <span class="q-num">Q 11</span>
+  <div class="q-title">What is DMN? (Decision Model and Notation)</div>
+  <div class="q-tags"><span class="q-tag">DMN</span><span class="q-tag">Business Rules</span><span class="q-tag">FEEL</span></div>
+  <p style="font-size:0.93em;margin-bottom:16px;">DMN is a standard for defining business rule decisions as tables, separate from process flow. Evaluated via a Business Rule Task in BPMN.</p>
+
+  <div class="sh">Our eligibility.dmn</div>
+  <table class="data-table">
+    <tr><th>Hit Policy</th><th>Input: age (integer)</th><th>Output: eligibility (boolean)</th></tr>
+    <tr><td>FIRST</td><td>&lt; 18</td><td>false</td></tr>
+    <tr><td></td><td>&gt; 60</td><td>false</td></tr>
+    <tr><td></td><td>[18..60]</td><td>true</td></tr>
+  </table>
+
+  <table class="data-table" style="margin-top:16px">
+    <tr><th>Hit Policy</th><th>Behaviour</th></tr>
+    <tr><td><strong>FIRST</strong></td><td>Returns first matching rule — order matters</td></tr>
+    <tr><td><strong>UNIQUE</strong></td><td>Only one rule can match — error if multiple match</td></tr>
+    <tr><td><strong>ANY</strong></td><td>Multiple can match but must return same output</td></tr>
+    <tr><td><strong>COLLECT</strong></td><td>Returns all matching outputs as a list</td></tr>
+    <tr><td><strong>RULE ORDER</strong></td><td>Returns all matches in rule order</td></tr>
+  </table>
+  <div class="interview-tip"><strong>💡 BPMN link:</strong> Business Rule Task → <code>calledDecision</code> must match DMN Decision ID exactly. IO mapping passes <code>age</code> as input, <code>eligibility</code> as output into process scope.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q12 -->
+<div class="q-card" id="q12">
+  <span class="q-num">Q 12</span>
+  <div class="q-title">What is a Pool and Lane in BPMN?</div>
+  <div class="q-tags"><span class="q-tag">BPMN</span><span class="q-tag">Collaboration</span></div>
+  <div class="flow"><span class="hl">Single Pool (one executable process):</span>
+┌─── BANK ────────────────────────────────────────────┐
+│  ┌─ Applicant Lane ─────────────────────────────┐   │
+│  │  [Submit App] ──────────────────────────────▶│   │
+│  └──────────────────────────────────────────────┘   │
+│  ┌─ System Lane ────────────────────────────────┐   │
+│  │             ──▶ [Eligibility] ──▶ [BG Check] │   │
+│  └──────────────────────────────────────────────┘   │
+│  ┌─ Manager Lane ───────────────────────────────┐   │
+│  │                          ──▶ [Review Task]   │   │
+│  └──────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
+
+<span class="hl">Multi-Pool (cross-org collaboration):</span>
+┌─── CUSTOMER ───┐                 ┌─── BANK ──────────┐
+│ [Submit App]   │ ─── message ──▶ │ [Review] [Decide] │
+└────────────────┘                 └───────────────────┘
+         <span class="warn">Cross-pool = Message Flow (dashed), NOT sequence flow</span></div>
+  <div class="interview-tip"><strong>💡 Key:</strong> Lanes are <strong>visual only</strong> — Zeebe ignores them at runtime. They do not affect execution, only clarity for readers.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q13 -->
+<div class="q-card" id="q13">
+  <span class="q-num">Q 13</span>
+  <div class="q-title">What are Intermediate Events?</div>
+  <div class="q-tags"><span class="q-tag">BPMN Events</span></div>
+  <table class="data-table">
+    <tr><th>Category</th><th>Type</th><th>Use Case</th></tr>
+    <tr><td rowspan="4"><strong>Catching</strong> (waits)</td><td>Timer</td><td>Wait 3 days before reminder</td></tr>
+    <tr><td>Message</td><td>Wait for payment confirmation</td></tr>
+    <tr><td>Signal</td><td>Wait for broadcast signal</td></tr>
+    <tr><td>Conditional</td><td>Wait until condition is true</td></tr>
+    <tr><td rowspan="4"><strong>Throwing</strong> (sends)</td><td>Message</td><td>Send message to another process</td></tr>
+    <tr><td>Signal</td><td>Broadcast to multiple processes</td></tr>
+    <tr><td>Escalation</td><td>Escalate to parent (use End Event in sub-process)</td></tr>
+    <tr><td>Compensation</td><td>Trigger undo/rollback logic</td></tr>
+    <tr><td><strong>Boundary</strong></td><td>Timer / Message / Escalation</td><td>Attached to task edge — interrupting or non-interrupting</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q14 -->
+<div class="q-card" id="q14">
+  <span class="q-num">Q 14</span>
+  <div class="q-title">What are Boundary Events? All Types.</div>
+  <div class="q-tags"><span class="q-tag">BPMN Events</span><span class="q-tag">Boundary</span></div>
+
+  <div class="cmp">
+    <div class="cmp-box">
+      <h4>⚡ Interrupting</h4>
+      <ul>
+        <li>Cancels the task when fired</li>
+        <li>Token leaves task via boundary flow</li>
+        <li>Task cannot complete normally</li>
+        <li>Solid border on boundary event</li>
+      </ul>
+    </div>
+    <div class="cmp-box">
+      <h4>🔔 Non-Interrupting</h4>
+      <ul>
+        <li>Task continues running after event fires</li>
+        <li>Spawns a parallel token on boundary flow</li>
+        <li>Both paths active simultaneously</li>
+        <li>Dashed border on boundary event</li>
+      </ul>
+    </div>
+  </div>
+
+  <table class="data-table" style="margin-top:14px">
+    <tr><th>Event Type</th><th>Interrupting?</th><th>Our POC Usage</th></tr>
+    <tr><td>Timer</td><td>Both supported</td><td>Interrupting 2min on Manager Review (sub-process) + Non-interrupting 24h on Loan Application</td></tr>
+    <tr><td>Message</td><td>Both supported</td><td>Not used</td></tr>
+    <tr><td>Error</td><td>Interrupting only</td><td>Not used</td></tr>
+    <tr><td>Escalation</td><td>Both supported</td><td>Escalation boundary on sub-process catches MANAGER_ESCALATION</td></tr>
+    <tr><td>Signal</td><td>Both supported</td><td>Not used</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q15 -->
+<div class="q-card" id="q15">
+  <span class="q-num">Q 15</span>
+  <div class="q-title">Sub-process &amp; Escalation Pattern — Deep Dive</div>
+  <div class="q-tags"><span class="q-tag">Sub-process</span><span class="q-tag">Escalation</span><span class="q-tag">POC</span></div>
+
+  <div class="sh">🔗 How Escalation connects sub-process to parent</div>
+  <div class="flow"><span class="dim">Shared escalation definition:</span>
+&lt;bpmn:escalation id="<span class="hl">Escalation_ManagerEscalation</span>"
+                 escalationCode="<span class="ok">MANAGER_ESCALATION</span>"/&gt;
+
+<span class="dim">Inside sub-process:</span>
+&lt;bpmn:endEvent&gt;
+  &lt;bpmn:escalationEventDefinition escalationRef="<span class="hl">Escalation_ManagerEscalation</span>"/&gt;
+&lt;/bpmn:endEvent&gt;
+         <span class="warn">↑ throws MANAGER_ESCALATION upward, terminates sub-process</span>
+
+<span class="dim">On sub-process boundary (parent):</span>
+&lt;bpmn:boundaryEvent attachedToRef="SubProcess_ManagerReview"&gt;
+  &lt;bpmn:escalationEventDefinition escalationRef="<span class="hl">Escalation_ManagerEscalation</span>"/&gt;
+&lt;/bpmn:boundaryEvent&gt;
+         <span class="ok">↑ catches it → continues to Notify Senior Manager</span></div>
+
+  <div class="sh">🗺️ Full Flow in our POC</div>
+  <div class="flow">AND Split
+ ├── <span class="hl">SubProcess_ManagerReview</span>
+ │    Inside:
+ │      SubStart → <span class="hl">Manager Review</span> (User Task)
+ │                    │
+ │                    └── ⏱️ 2-min Interrupting Timer
+ │                              ↓
+ │                    <span class="warn">Escalation End Event (MANAGER_ESCALATION)</span>
+ │                              ↓ throws upward
+ │    On boundary:
+ │      <span class="warn">Escalation Boundary</span> catches MANAGER_ESCALATION
+ │              ↓
+ │      <span class="ok">Notify Senior Manager</span> (notify-senior-manager worker)
+ │              ↓
+ │      <span class="hl">XOR Merge</span> ← also receives flow from normal sub-process end
+ │              ↓
+ └── <span class="hl">Background Check</span> → AND Join
+                              ↓
+                        Process End</div>
+
+  <div class="interview-tip"><strong>💡 Why XOR Merge before AND Join?</strong> AND join counts ALL declared incoming flows. Without XOR merge, escalation path AND normal path both point to AND join — if escalation fires, normal path never sends its token → deadlock. XOR merge collapses both into one token.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q16 -->
+<div class="q-card" id="q16">
+  <span class="q-num">Q 16</span>
+  <div class="q-title">What is Execution Scope?</div>
+  <div class="q-tags"><span class="q-tag">Variables</span><span class="q-tag">Scope</span></div>
+  <table class="data-table">
+    <tr><th>Scope Level</th><th>Visibility</th><th>Example</th></tr>
+    <tr><td><strong>Process Instance</strong></td><td>Global — all tasks/workers see it</td><td>name, email, eligibility</td></tr>
+    <tr><td><strong>Sub-process</strong></td><td>Local to sub-process; propagates up on completion</td><td>approvalDecision inside Manager sub-process</td></tr>
+    <tr><td><strong>Multi-instance</strong></td><td>Each iteration has own local scope</td><td>document variable per iteration</td></tr>
+  </table>
+  <div class="sh">IO Mapping — explicit scope control</div>
+  <pre><code>&lt;!-- Pull from process scope into sub-process --&gt;
+&lt;zeebe:input source="=name" target="applicantName"/&gt;
+
+&lt;!-- Push result back to process scope --&gt;
+&lt;zeebe:output source="=approval" target="managerApproval"/&gt;</code></pre>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q17 -->
+<div class="q-card" id="q17">
+  <span class="q-num">Q 17</span>
+  <div class="q-title">Process Instance Variable vs Multi-Instance Variable</div>
+  <div class="q-tags"><span class="q-tag">Variables</span><span class="q-tag">Multi-Instance</span></div>
+  <div class="cmp">
+    <div class="cmp-box">
+      <h4>📌 Process Instance Variable</h4>
+      <ul>
+        <li>One value, shared across entire process</li>
+        <li>Visible to all tasks globally</li>
+        <li>Set at start or by any worker</li>
+        <li>Example: name, email, eligibility</li>
+      </ul>
+    </div>
+    <div class="cmp-box">
+      <h4>🔁 Multi-Instance Variable</h4>
+      <ul>
+        <li>Each iteration has own local scope</li>
+        <li>inputElement: current item (local)</li>
+        <li>outputElement: result collected to array</li>
+        <li>Example: verify each document in parallel</li>
+      </ul>
+    </div>
+  </div>
+  <pre><code>&lt;zeebe:loopCharacteristics
+  isSequential="false"
+  inputCollection="=documents"
+  inputElement="document"
+  outputCollection="results"
+  outputElement="=verified"/&gt;</code></pre>
+  <div class="interview-tip"><strong>💡 POC fit:</strong> Multi-instance would apply if applicant uploads 3 documents and each needs parallel verification.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q18 -->
+<div class="q-card" id="q18">
+  <span class="q-num">Q 18</span>
+  <div class="q-title">What is JTA and why doesn't Camunda 8 support it?</div>
+  <div class="q-tags"><span class="q-tag">Transactions</span><span class="q-tag">JTA</span><span class="q-tag">Architecture</span></div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;"><strong>JTA (Java Transaction API)</strong> provides distributed transactions across multiple resources (DB + JMS + etc.) in a single ACID boundary.</p>
+
+  <div class="sh">Camunda 7 — JTA works</div>
+  <pre><code>@Transactional  // ONE transaction covers both
+public void saveAndComplete(PersonEntity person, DelegateExecution exec) {
+    personRepo.save(person);         // DB write
+    exec.setVariable("saved", true); // Engine write (same DB)
+    // crash here → BOTH roll back ✅
+}</code></pre>
+
+  <div class="sh">Camunda 8 — JTA impossible</div>
+  <pre><code>@JobWorker(type = "save-person-info")
+public void handle(JobClient client, ActivatedJob job) {
+    personRepo.save(person);  // DB write ✅
+    // app crashes 💥
+    client.newCompleteCommand(job.getKey()).send().join(); // never called
+    // Zeebe retries → duplicate insert ❌
+}</code></pre>
+  <p style="font-size:0.9em;color:#64748b;margin-top:8px;">Zeebe communicates via gRPC over a network boundary — JTA cannot span across a network. Solution: <strong>Idempotency pattern</strong>.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q19 -->
+<div class="q-card" id="q19">
+  <span class="q-num">Q 19</span>
+  <div class="q-title">Idempotency Pattern in Camunda 8</div>
+  <div class="q-tags"><span class="q-tag">Reliability</span><span class="q-tag">Zeebe Retry</span><span class="q-tag">POC</span></div>
+  <p style="font-size:0.93em;margin-bottom:14px;"><strong>Problem:</strong> Zeebe retries a job if the worker saves to DB but crashes before calling <code>newCompleteCommand()</code> — causes duplicate inserts.</p>
+  <pre><code>@JobWorker(type = "save-person-info")
+public void handlePersonInfo(JobClient client, ActivatedJob job) {
+    String email = (String) variables.get("email");
+
+    // IDEMPOTENCY CHECK — skip if already saved (retry scenario)
+    if (personRepository.existsByEmail(email)) {
+        log.warn("Already exists, skipping — likely a Zeebe retry.");
+    } else {
+        PersonEntity person = PersonEntity.builder()
+            .name((String) variables.get("name"))
+            .email(email)
+            // ... other fields
+            .build();
+        personService.savePerson(person);
+    }
+
+    // Always complete — regardless of save or skip
+    client.newCompleteCommand(job.getKey()).send().join();
+}</code></pre>
+  <div class="interview-tip"><strong>💡 Rule:</strong> Always complete the job. Without it, Zeebe retries indefinitely. Idempotency ensures retries are safe.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q20 -->
+<div class="q-card" id="q20">
+  <span class="q-num">Q 20</span>
+  <div class="q-title">What is the Business Key in Camunda?</div>
+  <div class="q-tags"><span class="q-tag">Process Instance</span><span class="q-tag">Correlation</span></div>
+  <p style="font-size:0.93em;margin-bottom:14px;">A Business Key is a domain-meaningful identifier attached to a process instance — separate from Zeebe's internal process instance key.</p>
+  <table class="data-table">
+    <tr><th></th><th>Zeebe Key</th><th>Business Key</th></tr>
+    <tr><td>Type</td><td>Auto-generated long (e.g. 2251799813685328)</td><td>Your domain ID (e.g. "LOAN-2024-0042")</td></tr>
+    <tr><td>Meaningful</td><td>No — internal only</td><td>Yes — traceable in logs/UI</td></tr>
+    <tr><td>Usage</td><td>API calls</td><td>Correlation, auditing, search in Operate</td></tr>
+  </table>
+  <pre><code>zeebeClient.newCreateInstanceCommand()
+    .bpmnProcessId("personal_loan_approval")
+    .latestVersion()
+    .variable("businessKey", "LOAN-2024-0042")
+    .send().join();</code></pre>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q21 -->
+<div class="q-card" id="q21">
+  <span class="q-num">Q 21</span>
+  <div class="q-title">When do we use a Connector in Camunda 8?</div>
+  <div class="q-tags"><span class="q-tag">Connectors</span><span class="q-tag">Integration</span></div>
+  <table class="data-table">
+    <tr><th></th><th>Connector</th><th>Job Worker</th></tr>
+    <tr><td>Code required</td><td>❌ No</td><td>✅ Yes (Java)</td></tr>
+    <tr><td>Config</td><td>In Modeler (template)</td><td>In Spring Boot</td></tr>
+    <tr><td>Best for</td><td>HTTP, email, Slack, Kafka, AWS</td><td>Custom business logic, DB ops</td></tr>
+  </table>
+  <div class="sh">Built-in Connectors</div>
+  <p style="font-size:0.9em;">HTTP REST · GraphQL · SOAP · Kafka · RabbitMQ · AWS SQS/SNS/Lambda · Slack · SendGrid · GitHub · OpenAI</p>
+  <div class="interview-tip"><strong>💡 POC improvement:</strong> Replace <code>NotifySeniorManagerWorker</code> with a SendGrid Connector — no Java code, configure email directly in Modeler.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q22 -->
+<div class="q-card" id="q22">
+  <span class="q-num">Q 22</span>
+  <div class="q-title">Custom Form Field Types in Camunda</div>
+  <div class="q-tags"><span class="q-tag">Forms</span><span class="q-tag">Tasklist</span></div>
+  <p style="font-size:0.93em;margin-bottom:14px;">Beyond built-in types (text, number, radio, select), you can define custom field components registered with Camunda's Form JS library.</p>
+  <table class="data-table">
+    <tr><th>Built-in</th><th>Custom Examples</th></tr>
+    <tr><td>Text, Number, Date</td><td>Star rating (1–5 stars)</td></tr>
+    <tr><td>Select, Radio, Checkbox</td><td>Address autocomplete (Google Maps)</td></tr>
+    <tr><td>Textarea</td><td>Signature capture (canvas-based)</td></tr>
+    <tr><td>File upload</td><td>File upload with preview</td></tr>
+  </table>
+  <div class="interview-tip"><strong>💡 POC:</strong> Not needed — built-in types cover our person.form and manager-review.form. Custom types apply when domain-specific UI is required.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q23 -->
+<div class="q-card" id="q23">
+  <span class="q-num">Q 23</span>
+  <div class="q-title">Business Objects — Does Camunda support them?</div>
+  <div class="q-tags"><span class="q-tag">Variables</span><span class="q-tag">JSON</span><span class="q-tag">POC</span></div>
+  <p style="font-size:0.93em;margin-bottom:14px;">Yes — pass entire object as a JSON variable instead of individual fields. Camunda 8 speaks JSON natively (no Java serialization like Camunda 7's ObjectValue).</p>
+  <pre><code>// Instead of 9 individual variables — pass one object:
+@JobWorker(type = "save-person-info")
+public void handle(JobClient client, ActivatedJob job) {
+    // Auto-deserialize all variables into Person record
+    Person person = job.getVariablesAsType(Person.class);
+    personService.savePerson(toEntity(person));
+    client.newCompleteCommand(job.getKey()).send().join();
+}</code></pre>
+  <p style="font-size:0.88em;color:#64748b;">Note: Camunda Forms flatten fields as individual variables. You can re-aggregate them in a worker or use a mapping gateway step.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q24 -->
+<div class="q-card" id="q24">
+  <span class="q-num">Q 24</span>
+  <div class="q-title">Can you start a Camunda 8 process in Suspended State?</div>
+  <div class="q-tags"><span class="q-tag">Process Lifecycle</span></div>
+  <p style="font-size:0.93em;margin-bottom:14px;"><strong>Camunda 8 / Zeebe:</strong> Cannot start directly in suspended state. Zeebe doesn't support instance-level suspension at start time.</p>
+  <table class="data-table">
+    <tr><th>Workaround</th><th>How</th></tr>
+    <tr><td>Suspend process definition</td><td>Suspend in Operate before starting — new instances paused immediately</td></tr>
+    <tr><td>Message/Timer Start Event</td><td>Process waits at start until trigger fires</td></tr>
+    <tr><td>Initial User Task</td><td>Most common — process starts but waits for human action before proceeding</td></tr>
+  </table>
+  <div class="interview-tip"><strong>💡 Camunda 7 only:</strong> <code>runtimeService.createProcessInstanceBuilder().suspend()</code> existed in C7 — not available in C8.</div>
+</div>
+
+</div><!-- /container -->
+
+<div class="site-footer">
+  Camunda BPM Interview Prep · Amit Rakhaiya · Ahmedabad, India
+</div>
+</body>
+</html>
