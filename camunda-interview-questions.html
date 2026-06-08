@@ -163,6 +163,9 @@
     <a href="#q25">25. JavaDelegate vs TaskListener vs Camunda 8</a>
     <a href="#q26">26. Key Benefits of Upgrading to Camunda 8</a>
     <a href="#q27">27. Camunda 8 Configurations</a>
+    <a href="#q28">28. Reusable Sub-process — Call Activity</a>
+    <a href="#q29">29. Manual Task — Support &amp; Importance</a>
+    <a href="#q30">30. Compensation — Example &amp; How it Triggers</a>
   </div>
 </div>
 
@@ -487,18 +490,55 @@ public class BackgroundCheckWorker {
   <span class="q-num">Q 13</span>
   <div class="q-title">What are Intermediate Events?</div>
   <div class="q-tags"><span class="q-tag">BPMN Events</span></div>
+
+  <p style="font-size:0.93em;margin-bottom:16px;">Think of a process as a journey. <strong>Start Event</strong> = departure, <strong>End Event</strong> = destination. Everything that happens <strong>during the journey</strong> is an Intermediate Event.</p>
+
+  <div class="flow"><span class="dim">[Start] ── do work ──</span> <span class="hl">[Intermediate Event]</span> <span class="dim">── do more work ── [End]</span>
+                              ↑
+                    something happens here
+                    (wait for it OR send it)</div>
+
+  <div class="sh">🎣 Catching — "I am waiting for something"</div>
+  <p style="font-size:0.9em;margin-bottom:10px;">Process <strong>pauses</strong> until the event occurs, then continues.</p>
+  <div class="flow"><span class="dim">[Approve Loan]</span> ──▶ <span class="hl">⏳ Wait 3 days</span> ──▶ <span class="dim">[Send Reminder]</span>
+                       Timer Catch (process pauses here)
+
+<span class="dim">[Submit Order]</span>  ──▶ <span class="hl">📨 Wait for payment</span> ──▶ <span class="dim">[Ship Goods]</span>
+                       Message Catch (pauses until message arrives)</div>
+
+  <div class="sh">📢 Throwing — "I am sending something"</div>
+  <p style="font-size:0.9em;margin-bottom:10px;">Process <strong>does not pause</strong> — fires the event and immediately moves on.</p>
+  <div class="flow"><span class="dim">[Process Complete]</span> ──▶ <span class="warn">📣 Notify other system</span> ──▶ <span class="dim">[Archive]</span>
+                          Signal Throw (fires and moves on instantly)</div>
+
+  <div class="sh">All Types at a Glance</div>
   <table class="data-table">
-    <tr><th>Category</th><th>Type</th><th>Use Case</th></tr>
-    <tr><td rowspan="4"><strong>Catching</strong> (waits)</td><td>Timer</td><td>Wait 3 days before reminder</td></tr>
-    <tr><td>Message</td><td>Wait for payment confirmation</td></tr>
-    <tr><td>Signal</td><td>Wait for broadcast signal</td></tr>
-    <tr><td>Conditional</td><td>Wait until condition is true</td></tr>
-    <tr><td rowspan="4"><strong>Throwing</strong> (sends)</td><td>Message</td><td>Send message to another process</td></tr>
-    <tr><td>Signal</td><td>Broadcast to multiple processes</td></tr>
-    <tr><td>Escalation</td><td>Escalate to parent (use End Event in sub-process)</td></tr>
-    <tr><td>Compensation</td><td>Trigger undo/rollback logic</td></tr>
-    <tr><td><strong>Boundary</strong></td><td>Timer / Message / Escalation</td><td>Attached to task edge — interrupting or non-interrupting</td></tr>
+    <tr><th>Type</th><th>Catching (waits)</th><th>Throwing (sends)</th></tr>
+    <tr><td><strong>Timer</strong></td><td>Wait N days/hours</td><td>❌ Not applicable</td></tr>
+    <tr><td><strong>Message</strong></td><td>Wait for named message</td><td>Send message to another process</td></tr>
+    <tr><td><strong>Signal</strong></td><td>Wait for broadcast</td><td>Broadcast to all listeners</td></tr>
+    <tr><td><strong>Escalation</strong></td><td>❌ Use boundary event</td><td>Escalate to parent process</td></tr>
+    <tr><td><strong>Compensation</strong></td><td>Wait for undo trigger</td><td>Trigger compensation (undo)</td></tr>
+    <tr><td><strong>Conditional</strong></td><td>Wait until condition true</td><td>❌ Not applicable</td></tr>
   </table>
+
+  <div class="sh">Standalone vs Boundary</div>
+  <div class="flow"><span class="hl">Standalone (in the flow):</span>              <span class="hl">Boundary (on task edge):</span>
+
+[Task A] ──▶ <span class="ok">⏳</span> ──▶ [Task B]          [Task A]
+              ↑                              <span class="warn">🔔</span> ← attached here
+          waits here                          ↓
+          then continues                 [Exception path]</div>
+
+  <div class="sh">In Our POC</div>
+  <table class="data-table">
+    <tr><th>Event</th><th>Type</th><th>Behaviour</th></tr>
+    <tr><td>24h timer on Loan Application</td><td>Non-interrupting Boundary Timer</td><td>Fires reminder while task still runs</td></tr>
+    <tr><td>2min timer on Manager Review</td><td>Interrupting Boundary Timer</td><td>Cancels task, triggers escalation</td></tr>
+    <tr><td>Escalation End inside sub-process</td><td>Throwing Escalation</td><td>Signals parent to catch on boundary</td></tr>
+  </table>
+
+  <div class="interview-tip"><strong>💡 One-liner:</strong> Intermediate events sit between start and end — catching types pause the process waiting for something to happen, throwing types signal outward and continue immediately. Boundary variants attach to tasks and only activate while that task is running.</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ Q14 -->
@@ -927,6 +967,190 @@ zeebeClient.newDeployResourceCommand()
 &lt;zeebe:taskDefinition type="backgroundCheck" retries="3"/&gt;</code></pre>
 
   <div class="interview-tip"><strong>💡 Our POC:</strong> Uses only two lines — <code>gateway-address</code> and <code>plaintext=true</code>. For production, tune <code>maxJobsActive</code> and <code>timeout</code> per worker based on expected load and processing time.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q28 -->
+<div class="q-card" id="q28">
+  <span class="q-num">Q 28</span>
+  <div class="q-title">How to create a reusable sub-process usable across multiple processes?</div>
+  <div class="q-tags"><span class="q-tag">Call Activity</span><span class="q-tag">Reusability</span><span class="q-tag">BPMN</span></div>
+
+  <div class="sh">Embedded Sub-process vs Call Activity</div>
+  <table class="data-table">
+    <tr><th></th><th>Embedded Sub-process</th><th>Call Activity</th></tr>
+    <tr><td>Definition</td><td>Inside the parent BPMN</td><td>Separate BPMN file</td></tr>
+    <tr><td>Reusable across processes</td><td>❌ No</td><td>✅ Yes</td></tr>
+    <tr><td>Deployed separately</td><td>❌ No</td><td>✅ Yes</td></tr>
+    <tr><td>Independent versioning</td><td>❌ No</td><td>✅ Yes</td></tr>
+  </table>
+
+  <div class="sh">Step 1 — Child process as its own BPMN</div>
+  <pre><code>&lt;!-- document-verification.bpmn --&gt;
+&lt;bpmn:process id="document_verification" isExecutable="true"&gt;
+  &lt;bpmn:startEvent id="Start"/&gt;
+  &lt;bpmn:serviceTask id="VerifyDoc" name="Verify Document"&gt;
+    &lt;zeebe:taskDefinition type="verify-document"/&gt;
+  &lt;/bpmn:serviceTask&gt;
+  &lt;bpmn:endEvent id="End"/&gt;
+&lt;/bpmn:process&gt;</code></pre>
+
+  <div class="sh">Step 2 — Reference via Call Activity in parent</div>
+  <pre><code>&lt;bpmn:callActivity id="CallVerification" calledElement="document_verification"&gt;
+  &lt;bpmn:extensionElements&gt;
+    &lt;!-- Pass variables INTO child --&gt;
+    &lt;zeebe:input source="=email" target="email"/&gt;
+    &lt;zeebe:input source="=documents" target="documents"/&gt;
+    &lt;!-- Pull results OUT of child --&gt;
+    &lt;zeebe:output source="=verificationPassed" target="verificationPassed"/&gt;
+  &lt;/bpmn:extensionElements&gt;
+&lt;/bpmn:callActivity&gt;</code></pre>
+
+  <div class="sh">Variable Scope</div>
+  <div class="flow"><span class="hl">Parent Scope:</span> { name, email, documents }
+        │  zeebe:input → maps selected vars down
+        ▼
+<span class="hl">Child Scope:</span>  { email, documents }   <span class="dim">← isolated, no auto-inheritance</span>
+        │  zeebe:output → maps results up
+        ▼
+<span class="hl">Parent Scope:</span> { name, email, documents, <span class="ok">verificationPassed</span> }</div>
+
+  <div class="sh">Deployment</div>
+  <pre><code>zeebeClient.newDeployResourceCommand()
+    .addResourceFromClasspath("document-verification.bpmn") // child
+    .addResourceFromClasspath("sample-process.bpmn")        // parent
+    .send().join();</code></pre>
+
+  <div class="sh">Versioning</div>
+  <pre><code>&lt;!-- Always latest --&gt;
+&lt;bpmn:callActivity calledElement="document_verification"&gt;
+
+&lt;!-- Pin to specific version --&gt;
+&lt;bpmn:callActivity calledElement="document_verification"
+                   camunda:calledElementBinding="version"
+                   camunda:calledElementVersion="2"&gt;</code></pre>
+
+  <div class="sh">Real-world Use Cases</div>
+  <ul class="point-list">
+    <li><span class="pl-icon">🔐</span><div><strong>KYC verification</strong> — called from Loan, Account Opening, Credit Card processes</div></li>
+    <li><span class="pl-icon">📄</span><div><strong>Document verification</strong> — reused across any process needing doc checks</div></li>
+    <li><span class="pl-icon">📧</span><div><strong>Notification flow</strong> — standard email/SMS called from multiple parents</div></li>
+    <li><span class="pl-icon">✅</span><div><strong>Generic approval workflow</strong> — parameterized via IO mapping</div></li>
+  </ul>
+
+  <div class="interview-tip"><strong>💡 One-liner:</strong> Call Activity references a separately deployed child process by ID, with isolated variable scope via IO mapping and independent versioning — Camunda's mechanism for reusable sub-processes.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q29 -->
+<div class="q-card" id="q29">
+  <span class="q-num">Q 29</span>
+  <div class="q-title">Is Manual Task supported in Camunda 7? What is its importance?</div>
+  <div class="q-tags"><span class="q-tag">BPMN Tasks</span><span class="q-tag">Camunda 7</span><span class="q-tag">Camunda 8</span></div>
+
+  <table class="data-table">
+    <tr><th></th><th>Manual Task</th><th>User Task</th></tr>
+    <tr><td>Camunda 7 support</td><td>✅ Passes through automatically</td><td>✅ Creates task in Tasklist</td></tr>
+    <tr><td>Camunda 8 support</td><td>✅ Same — no worker needed</td><td>✅ Same</td></tr>
+    <tr><td>Appears in Tasklist</td><td>❌ No</td><td>✅ Yes</td></tr>
+    <tr><td>Form / variables</td><td>❌ None</td><td>✅ Form input captured</td></tr>
+    <tr><td>Engine waits</td><td>❌ Flows through immediately</td><td>✅ Waits for human completion</td></tr>
+    <tr><td>Implementation needed</td><td>❌ Zero code</td><td>✅ Form + optional listener</td></tr>
+  </table>
+
+  <div class="sh">Use Cases</div>
+  <table class="data-table">
+    <tr><th>Scenario</th><th>Why Manual Task</th></tr>
+    <tr><td>Print and file a paper document</td><td>System can't track — just model it</td></tr>
+    <tr><td>Physical inspection of goods</td><td>Offline action, no system touch</td></tr>
+    <tr><td>Sign a physical contract</td><td>Wet signature, no digital flow</td></tr>
+    <tr><td>Verbal approval in a meeting</td><td>Compliance requires it in the model</td></tr>
+    <tr><td>Legacy system data entry</td><td>No API available to automate</td></tr>
+  </table>
+
+  <div class="sh">Key Benefits</div>
+  <ul class="point-list">
+    <li><span class="pl-icon">📋</span><div><strong>Compliance / Audit</strong> — Regulatory audits require offline steps to be visible in the process model even if unautomated.</div></li>
+    <li><span class="pl-icon">🗺️</span><div><strong>Complete Process Picture</strong> — Without Manual Task, offline steps are invisible in Operate. Accurately reflects reality for business analysts.</div></li>
+    <li><span class="pl-icon">⚡</span><div><strong>Zero Implementation Cost</strong> — No worker, no form, no code. Drop it in BPMN, engine flows through instantly.</div></li>
+    <li><span class="pl-icon">🚧</span><div><strong>Migration Marker</strong> — Mark not-yet-automated steps as Manual Tasks. Replace with Service/User Tasks as automation is built progressively.</div></li>
+  </ul>
+
+  <div class="interview-tip"><strong>💡 One-liner:</strong> Manual Task models offline human work the system cannot interact with — passes through automatically in both Camunda 7 and 8. Its value is process completeness, compliance documentation, and marking steps pending automation.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q30 -->
+<div class="q-card" id="q30">
+  <span class="q-num">Q 30</span>
+  <div class="q-title">Compensation in BPMN — Example, Real-world Use Cases &amp; How it Triggers</div>
+  <div class="q-tags"><span class="q-tag">Compensation</span><span class="q-tag">BPMN Events</span><span class="q-tag">Undo Pattern</span></div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Compensation = <strong>undo what was already successfully done</strong> when something goes wrong later. It is NOT error handling (that deals with mid-task failures). Compensation runs after a task has <strong>already completed</strong>.</p>
+
+  <div class="sh">Mental Model</div>
+  <div class="flow"><span class="dim">Normal flow:</span>
+[Book Flight ✅] ──▶ [Book Hotel ✅] ──▶ [Charge Card ❌ fails]
+
+<span class="warn">Compensation:</span>
+                 [Cancel Hotel] ◀── [Cancel Flight]
+                      ↑ handler          ↑ handler
+              (engine fires in reverse order automatically)</div>
+
+  <div class="sh">Three Pieces That Work Together</div>
+  <table class="data-table">
+    <tr><th>Piece</th><th>Role</th></tr>
+    <tr><td><strong>Compensation Boundary Event</strong></td><td>Attached to completed task — marks it as compensatable, linked to handler</td></tr>
+    <tr><td><strong>Compensation Handler</strong></td><td>Service Task that performs the undo — never called directly</td></tr>
+    <tr><td><strong>Compensation Throw Event</strong></td><td>Placed on the failure path — triggers compensation for all completed tasks in scope</td></tr>
+  </table>
+
+  <div class="sh">How the Trigger Works</div>
+  <div class="flow">[Disburse Loan ✅] ──▶ [KYC Post-Check]
+        │                       │
+        <span class="warn">🔄 Comp Boundary</span>          ├── ✅ passed ──▶ [End]
+        │                       │
+        ▼                       └── ❌ failed ──▶ <span class="warn">🔄 Compensation Throw Event</span>
+  [Reverse Disbursement]                                │
+  (handler — never called directly)                     │ Engine scans process instance
+                                                        │ finds all completed tasks
+                                                        │ with compensation boundaries
+                                                        ▼
+                                             <span class="ok">[Reverse Disbursement] fires</span></div>
+
+  <div class="sh">Correct Mental Model</div>
+  <div class="flow"><span class="warn">❌ Wrong:</span> KYC fails → call [Reverse Disbursement] directly
+
+<span class="ok">✅ Correct:</span> KYC fails → Compensation Throw Event
+             → Engine finds all compensatable completed tasks in scope
+             → Engine calls their handlers automatically (reverse order)</div>
+
+  <div class="sh">Real-world Use Cases</div>
+  <table class="data-table">
+    <tr><th>Domain</th><th>Completed Steps</th><th>Compensation Needed</th></tr>
+    <tr><td>Travel booking</td><td>Book flight + hotel + car</td><td>Cancel all if payment fails</td></tr>
+    <tr><td>Bank transfer</td><td>Debit source account</td><td>Credit back if destination fails</td></tr>
+    <tr><td>Order fulfillment</td><td>Reserve stock + create shipment</td><td>Release stock if payment declined</td></tr>
+    <tr><td>Loan disbursement</td><td>Approve + disburse funds</td><td>Reverse disbursement if post-KYC fails</td></tr>
+    <tr><td>Event registration</td><td>Register + assign seat + send ticket</td><td>Unassign seat + invalidate ticket if cancelled</td></tr>
+  </table>
+
+  <div class="sh">Compensation vs Error Boundary</div>
+  <table class="data-table">
+    <tr><th></th><th>Error Boundary</th><th>Compensation</th></tr>
+    <tr><td>When task is</td><td>Still running</td><td>Already completed ✅</td></tr>
+    <tr><td>Purpose</td><td>Handle failure mid-task</td><td>Undo already-done work</td></tr>
+    <tr><td>Triggered by</td><td>Exception/error thrown</td><td>Compensation Throw Event</td></tr>
+    <tr><td>Direction</td><td>Forward (alternative path)</td><td>Backward (undo)</td></tr>
+  </table>
+
+  <div class="sh">Camunda 8 — Handler as @JobWorker</div>
+  <pre><code>@JobWorker(type = "cancel-flight")
+public void cancelFlight(JobClient client, ActivatedJob job) {
+    String bookingId = (String) job.getVariablesAsMap().get("flightBookingId");
+    flightService.cancel(bookingId);
+    log.info("Flight {} cancelled as compensation", bookingId);
+    client.newCompleteCommand(job.getKey()).send().join();
+}</code></pre>
+
+  <div class="interview-tip"><strong>💡 One-liner:</strong> The Compensation Throw Event is the trigger — placed on the failure path. The engine automatically finds all completed tasks with compensation boundaries in scope and executes their handlers in reverse order. You never invoke the handler directly.</div>
 </div>
 
 </div><!-- /container -->
