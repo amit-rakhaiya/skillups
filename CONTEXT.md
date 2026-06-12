@@ -39,7 +39,12 @@ Skills: Java, Spring Boot, Camunda BPM, Microservices, Kafka, AWS, Docker
 | `apache-kafka-interview.html` | Apache Kafka | ✅ Exists |
 | `microservices-interview.html` | Microservices | ✅ Exists |
 | `camunda-interview-questions.html` | Camunda BPM (24 Qs) | ✅ Done |
+| `java-interview-questions.html` | Java 11-21, Collections, Concurrency (13 Qs) | ✅ Done |
 | `site.css` | Shared nav + styles | ✅ Done |
+
+**Tag classes for Java page:**
+- `.tag-java` · `.tag-java11` · `.tag-java14` · `.tag-java16` · `.tag-java17` · `.tag-java21` · `.tag-collections` · `.tag-concurrency`
+- Use `<span class="q-tag tag-java">Java</span>` etc.
 
 **Shared style rules (all HTML files must follow):**
 - `<link rel="stylesheet" href="site.css">` in `<head>`

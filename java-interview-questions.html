@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Interview Prep</title>
+<link rel="stylesheet" href="site.css">
+<style>
+  body {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    padding: 0 0 60px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 20px 0; }
+
+  .header {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #3b82f6 100%);
+    color: white;
+    padding: 44px 50px;
+    margin-bottom: 30px;
+  }
+  .header h1 { font-size: 2.2em; font-weight: 800; margin-bottom: 8px; }
+  .header p  { font-size: 1em; opacity: 0.9; }
+
+  /* version legend */
+  .version-legend {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    background: white; padding: 16px 24px;
+    border-radius: 12px; margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    align-items: center;
+  }
+  .version-legend span { font-size:0.78em; font-weight:600; color:#374151; margin-right:4px; }
+
+  /* TOC */
+  .toc {
+    background: white;
+    padding: 24px 32px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    margin-bottom: 30px;
+    border-left: 5px solid #2563eb;
+  }
+  .toc h2 { color: #1d4ed8; margin-bottom: 14px; font-size: 1.1em; font-weight: 700; }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+    gap: 6px 20px;
+  }
+  .toc-grid a {
+    color: #1e40af; text-decoration: none; font-size: 0.88em;
+    font-weight: 500; padding: 3px 0;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .toc-grid a:hover { color: #2563eb; }
+
+  /* Question Card */
+  .q-card {
+    background: white;
+    border-radius: 16px;
+    padding: 34px 38px;
+    margin-bottom: 28px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    border-top: 6px solid #2563eb;
+  }
+  .q-num {
+    display: inline-block;
+    background: #2563eb; color: white;
+    padding: 3px 13px; border-radius: 999px;
+    font-size: 0.78em; font-weight: 700;
+    margin-bottom: 10px; letter-spacing: 0.5px;
+  }
+  .q-title {
+    font-size: 1.5em; color: #1a202c;
+    margin-bottom: 16px; font-weight: 800;
+  }
+  .q-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
+  .q-tag {
+    padding:3px 10px; border-radius:999px;
+    font-size:0.75em; font-weight:600; border:1px solid;
+  }
+  /* tag color variants */
+  .tag-java    { background:#dbeafe; color:#1e40af; border-color:#bfdbfe; }
+  .tag-java11  { background:#dcfce7; color:#166534; border-color:#bbf7d0; }
+  .tag-java14  { background:#fef9c3; color:#854d0e; border-color:#fef08a; }
+  .tag-java16  { background:#ffedd5; color:#9a3412; border-color:#fed7aa; }
+  .tag-java17  { background:#f3e8ff; color:#6b21a8; border-color:#e9d5ff; }
+  .tag-java21  { background:#fce7f3; color:#9d174d; border-color:#fbcfe8; }
+  .tag-collections { background:#e0f2fe; color:#0c4a6e; border-color:#bae6fd; }
+  .tag-concurrency { background:#f0fdf4; color:#14532d; border-color:#bbf7d0; }
+
+  .sh { font-size:1em; font-weight:700; color:#1d4ed8; margin:20px 0 10px; display:flex; align-items:center; gap:8px; }
+
+  .cmp {
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:14px 0;
+  }
+  @media(max-width:600px){ .cmp{grid-template-columns:1fr;} }
+  .cmp-box {
+    background:#f8fafc; border-radius:10px;
+    padding:16px 18px; border-top:3px solid #2563eb;
+  }
+  .cmp-box h4 { font-size:0.88em; font-weight:700; color:#1e293b; margin-bottom:8px; }
+  .cmp-box ul { list-style:none; }
+  .cmp-box ul li { font-size:0.85em; color:#374151; padding:3px 0; display:flex; gap:6px; }
+  .cmp-box ul li::before { content:'▸'; color:#2563eb; flex-shrink:0; }
+
+  .point-list { list-style:none; margin:10px 0; }
+  .point-list li {
+    padding:8px 0; border-bottom:1px solid #f1f5f9;
+    font-size:0.93em; display:flex; gap:10px; align-items:flex-start;
+  }
+  .point-list li:last-child { border-bottom:none; }
+  .point-list .pl-icon { font-size:1.1em; flex-shrink:0; margin-top:1px; }
+
+  .flow {
+    background:#1e293b; color:#94a3b8;
+    font-family:"Fira Code",Consolas,monospace;
+    font-size:0.8em; padding:20px 24px;
+    border-radius:10px; overflow-x:auto;
+    white-space:pre; margin:14px 0; line-height:1.7;
+  }
+  .flow .hl  { color:#38bdf8; }
+  .flow .ok  { color:#4ade80; }
+  .flow .warn{ color:#fb923c; }
+  .flow .dim { color:#475569; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="index.html" class="nav-brand">⚡ Amit's Interview Prep</a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="java-interview-questions.html" class="active">☕ Java</a></li>
+    <li><a href="spring-boot-interview.html">🌱 Spring Boot</a></li>
+    <li><a href="apache-kafka-interview.html">📨 Kafka</a></li>
+    <li><a href="microservices-interview.html">🔧 Microservices</a></li>
+    <li><a href="camunda-interview-questions.html">⚙️ Camunda</a></li>
+  </ul>
+</nav>
+
+<div class="header">
+  <h1>☕ Java Interview Prep</h1>
+  <p>Java 11–21 Features · Collections · Concurrency · OOP · Advanced Java</p>
+</div>
+
+<div class="container">
+<a href="index.html" class="back-home">← Back to Home</a>
+
+<!-- VERSION LEGEND -->
+<div class="version-legend">
+  <span>Tag legend:</span>
+  <span class="q-tag tag-java">Java</span><span style="font-size:0.8em;color:#64748b">All versions</span>
+  <span class="q-tag tag-java11">Java11</span>
+  <span class="q-tag tag-java14">Java14</span>
+  <span class="q-tag tag-java16">Java16</span>
+  <span class="q-tag tag-java17">Java17</span>
+  <span class="q-tag tag-java21">Java21</span>
+  <span class="q-tag tag-collections">Collections</span>
+  <span class="q-tag tag-concurrency">Concurrency</span>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>📋 Table of Contents</h2>
+  <div class="toc-grid">
+    <a href="#q1">1. Local Variable Type Inference (var)</a>
+    <a href="#q2">2. String API Enhancements</a>
+    <a href="#q3">3. HTTP Client API</a>
+    <a href="#q4">4. Switch Expressions</a>
+    <a href="#q5">5. Text Blocks</a>
+    <a href="#q6">6. Records</a>
+    <a href="#q7">7. Pattern Matching — instanceof</a>
+    <a href="#q8">8. Sealed Classes</a>
+    <a href="#q9">9. Virtual Threads (Project Loom)</a>
+    <a href="#q10">10. Sequenced Collections</a>
+    <a href="#q11">11. Pattern Matching — Switch</a>
+    <a href="#q12">12. Optional API</a>
+    <a href="#q13">13. Stream API Enhancements</a>
+    <a href="#q14">14. What is Stream and easiness over loops?</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q1 -->
+<div class="q-card" id="q1">
+  <span class="q-num">Q 01</span>
+  <div class="q-title">Local Variable Type Inference — var</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java11">Java10+</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">
+    <code>var</code> lets the compiler infer the type of a local variable — reduces boilerplate without losing static typing.
+  </p>
+
+  <div class="sh">Before vs After</div>
+  <pre><code>// Before Java 10
+Map&lt;String, List&lt;Person&gt;&gt; personMap = new HashMap&lt;String, List&lt;Person&gt;&gt;();
+
+// With var — compiler infers the type
+var personMap = new HashMap&lt;String, List&lt;Person&gt;&gt;();
+var list = new ArrayList&lt;String&gt;();
+var name = "Amit";   // inferred as String</code></pre>
+
+  <div class="sh">Rules</div>
+  <table class="data-table">
+    <tr><th>✅ Allowed</th><th>❌ Not Allowed</th></tr>
+    <tr><td>Local variables with initializer</td><td>Method parameters</td></tr>
+    <tr><td>for / enhanced-for loop variables</td><td>Return types</td></tr>
+    <tr><td>try-with-resources variables</td><td>Class fields</td></tr>
+    <tr><td>Lambda parameters (Java 11)</td><td><code>var x;</code> — no initializer</td></tr>
+  </table>
+
+  <pre><code>// Java 11 — var in lambda parameters (enables annotations)
+var list = List.of("a", "b", "c");
+list.forEach((@NotNull var item) -> System.out.println(item));</code></pre>
+
+  <div class="interview-tip"><strong>💡 Key point:</strong> <code>var</code> is still <strong>statically typed</strong> — type is resolved at compile time, not runtime. It is NOT like JavaScript's <code>var</code>. Avoid using it when the type is not obvious from the right-hand side — hurts readability.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q2 -->
+<div class="q-card" id="q2">
+  <span class="q-num">Q 02</span>
+  <div class="q-title">String API Enhancements (Java 11+)</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java11">Java11</span>
+  </div>
+
+  <table class="data-table">
+    <tr><th>Method</th><th>Description</th><th>Example</th></tr>
+    <tr><td><code>isBlank()</code></td><td>true if empty or only whitespace</td><td><code>"  ".isBlank() → true</code></td></tr>
+    <tr><td><code>strip()</code></td><td>Unicode-aware trim (better than trim())</td><td><code>"  hi  ".strip() → "hi"</code></td></tr>
+    <tr><td><code>stripLeading()</code></td><td>Remove leading whitespace only</td><td><code>"  hi  ".stripLeading() → "hi  "</code></td></tr>
+    <tr><td><code>stripTrailing()</code></td><td>Remove trailing whitespace only</td><td><code>"  hi  ".stripTrailing() → "  hi"</code></td></tr>
+    <tr><td><code>lines()</code></td><td>Returns Stream&lt;String&gt; of lines</td><td><code>"a\nb\nc".lines().count() → 3</code></td></tr>
+    <tr><td><code>repeat(n)</code></td><td>Repeat string n times</td><td><code>"ab".repeat(3) → "ababab"</code></td></tr>
+    <tr><td><code>indent(n)</code> (Java 12)</td><td>Add/remove leading whitespace per line</td><td>Useful for formatting</td></tr>
+    <tr><td><code>formatted()</code> (Java 15)</td><td>Instance version of String.format()</td><td><code>"Hello %s".formatted("Amit")</code></td></tr>
+  </table>
+
+  <div class="sh">strip() vs trim() — Important Difference</div>
+  <pre><code>String s = " Hello "; // Unicode whitespace
+
+s.trim().equals("Hello")  → false  // trim() only handles ASCII whitespace (  and below)
+s.strip().equals("Hello") → true   // strip() handles all Unicode whitespace</code></pre>
+
+  <div class="sh">Files API (Java 11)</div>
+  <pre><code>// Read entire file as String
+String content = Files.readString(Path.of("file.txt"));
+
+// Write String to file
+Files.writeString(Path.of("output.txt"), "Hello World");</code></pre>
+
+  <div class="interview-tip"><strong>💡 Interview trap:</strong> Always prefer <code>strip()</code> over <code>trim()</code> in Java 11+. <code>trim()</code> misses Unicode whitespace characters.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q3 -->
+<div class="q-card" id="q3">
+  <span class="q-num">Q 03</span>
+  <div class="q-title">HTTP Client API</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java11">Java11</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Java 11 standardized the HTTP Client (was incubating in Java 9/10). Supports HTTP/1.1, HTTP/2, WebSocket, sync &amp; async calls.</p>
+
+  <div class="sh">Synchronous GET</div>
+  <pre><code>HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.example.com/users"))
+    .header("Accept", "application/json")
+    .GET()
+    .build();
+
+HttpResponse&lt;String&gt; response = client.send(request,
+    HttpResponse.BodyHandlers.ofString());
+
+System.out.println(response.statusCode()); // 200
+System.out.println(response.body());</code></pre>
+
+  <div class="sh">Asynchronous POST</div>
+  <pre><code>HttpClient client = HttpClient.newBuilder()
+    .version(HttpClient.Version.HTTP_2)
+    .connectTimeout(Duration.ofSeconds(10))
+    .build();
+
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.example.com/users"))
+    .header("Content-Type", "application/json")
+    .POST(HttpRequest.BodyPublishers.ofString("{\"name\":\"Amit\"}"))
+    .build();
+
+// Non-blocking
+client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+    .thenApply(HttpResponse::body)
+    .thenAccept(System.out::println)
+    .join();</code></pre>
+
+  <div class="interview-tip"><strong>💡 vs RestTemplate/WebClient:</strong> Java's built-in HTTP Client is lightweight with no dependencies. In Spring apps, WebClient (reactive) or RestTemplate are preferred. Built-in client is useful for non-Spring modules or utilities.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q4 -->
+<div class="q-card" id="q4">
+  <span class="q-num">Q 04</span>
+  <div class="q-title">Switch Expressions</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java14">Java14</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Switch Expressions (preview Java 12, standard Java 14) make switch return a value and eliminate fall-through bugs.</p>
+
+  <div class="sh">Old Switch Statement vs New Switch Expression</div>
+  <pre><code>// Old — verbose, fall-through risk, no value
+String result;
+switch (day) {
+    case MONDAY:
+    case TUESDAY:
+        result = "Weekday";
+        break;
+    case SATURDAY:
+    case SUNDAY:
+        result = "Weekend";
+        break;
+    default:
+        result = "Unknown";
+}
+
+// New Switch Expression — arrow syntax, returns value
+String result = switch (day) {
+    case MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY -> "Weekday";
+    case SATURDAY, SUNDAY -> "Weekend";
+};</code></pre>
+
+  <div class="sh">yield — for multi-line blocks</div>
+  <pre><code>int score = switch (grade) {
+    case "A" -> 100;
+    case "B" -> 80;
+    case "C" -> {
+        System.out.println("Average grade");
+        yield 60;   // yield returns value from block
+    }
+    default -> 0;
+};</code></pre>
+
+  <table class="data-table">
+    <tr><th></th><th>Old Switch</th><th>New Switch Expression</th></tr>
+    <tr><td>Returns value</td><td>❌ No</td><td>✅ Yes</td></tr>
+    <tr><td>Fall-through</td><td>⚠️ Yes (bug-prone)</td><td>❌ No (arrow syntax)</td></tr>
+    <tr><td>Exhaustiveness</td><td>Not checked</td><td>Compiler enforces all cases</td></tr>
+    <tr><td>Multi-case</td><td><code>case A: case B:</code></td><td><code>case A, B -></code></td></tr>
+  </table>
+
+  <div class="interview-tip"><strong>💡 Key:</strong> Use <code>yield</code> only inside block cases <code>{ }</code>. Arrow cases <code>-></code> return directly without yield.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q5 -->
+<div class="q-card" id="q5">
+  <span class="q-num">Q 05</span>
+  <div class="q-title">Text Blocks</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java14">Java15</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Text blocks (preview Java 13, standard Java 15) allow multi-line string literals without escape sequences.</p>
+
+  <pre><code>// Before — ugly escape sequences
+String json = "{\n" +
+              "  \"name\": \"Amit\",\n" +
+              "  \"role\": \"Architect\"\n" +
+              "}";
+
+// Text Block
+String json = """
+        {
+          "name": "Amit",
+          "role": "Architect"
+        }
+        """;</code></pre>
+
+  <div class="sh">Real-world Use Cases</div>
+  <pre><code>// SQL
+String sql = """
+        SELECT u.name, u.email
+        FROM users u
+        WHERE u.active = true
+        ORDER BY u.name
+        """;
+
+// HTML template
+String html = """
+        &lt;div class="card"&gt;
+            &lt;h2&gt;%s&lt;/h2&gt;
+            &lt;p&gt;%s&lt;/p&gt;
+        &lt;/div&gt;
+        """.formatted(title, description);</code></pre>
+
+  <div class="sh">Indentation Rules</div>
+  <pre><code>// Closing """ controls indentation
+String s = """
+        line1
+        line2
+        """;   // trailing newline included, common indent stripped
+
+// No trailing newline — place closing """ on last line
+String s = """
+        line1
+        line2""";</code></pre>
+
+  <div class="interview-tip"><strong>💡 Key:</strong> The position of the closing <code>"""</code> determines the common indent that gets stripped. Text blocks also support <code>\</code> (line continuation) and <code>\s</code> (explicit trailing space).</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q6 -->
+<div class="q-card" id="q6">
+  <span class="q-num">Q 06</span>
+  <div class="q-title">Records</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java16">Java16</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Records are immutable data carriers — the compiler auto-generates constructor, getters, equals(), hashCode(), and toString().</p>
+
+  <div class="sh">Before vs After</div>
+  <pre><code>// Before — 40+ lines of boilerplate
+public final class Person {
+    private final String name;
+    private final int age;
+    public Person(String name, int age) { this.name = name; this.age = age; }
+    public String name() { return name; }
+    public int age() { return age; }
+    @Override public boolean equals(Object o) { ... }
+    @Override public int hashCode() { ... }
+    @Override public String toString() { ... }
+}
+
+// Record — 1 line
+public record Person(String name, int age) {}</code></pre>
+
+  <div class="sh">What's auto-generated</div>
+  <pre><code>Person p = new Person("Amit", 35);
+p.name()         // accessor (not getName())
+p.age()          // accessor
+p.equals(other)  // deep equality on all components
+p.hashCode()     // based on all components
+p.toString()     // "Person[name=Amit, age=35]"</code></pre>
+
+  <div class="sh">Custom compact constructor — validation</div>
+  <pre><code>public record Person(String name, int age) {
+    // Compact constructor — no parameter list needed
+    Person {
+        if (age < 0) throw new IllegalArgumentException("Age cannot be negative");
+        name = name.trim(); // can transform parameters
+    }
+}</code></pre>
+
+  <div class="sh">What Records CANNOT do</div>
+  <table class="data-table">
+    <tr><th>Restriction</th><th>Reason</th></tr>
+    <tr><td>Cannot extend another class</td><td>Implicitly extends Record</td></tr>
+    <tr><td>Cannot have mutable fields</td><td>All components are final</td></tr>
+    <tr><td>Cannot be abstract</td><td>Records are implicitly final</td></tr>
+    <tr><td>Cannot add instance fields</td><td>Only declared components allowed</td></tr>
+  </table>
+
+  <div class="interview-tip"><strong>💡 Use case:</strong> DTOs, API response/request objects, value objects in DDD. In our Camunda POC we use <code>record Person(...)</code> as DTO — replaces a Lombok <code>@Data</code> class with zero boilerplate and true immutability.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q7 -->
+<div class="q-card" id="q7">
+  <span class="q-num">Q 07</span>
+  <div class="q-title">Pattern Matching — instanceof</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java16">Java16</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Eliminates the verbose cast-after-instanceof pattern.</p>
+
+  <pre><code>// Before Java 16 — check then cast (redundant)
+if (obj instanceof String) {
+    String s = (String) obj;   // redundant cast
+    System.out.println(s.length());
+}
+
+// Java 16+ — bind variable in the pattern
+if (obj instanceof String s) {
+    System.out.println(s.length());  // s is already String, scoped to if block
+}
+
+// With condition
+if (obj instanceof String s && s.length() > 5) {
+    System.out.println("Long string: " + s);
+}</code></pre>
+
+  <div class="sh">Real-world — polymorphic processing</div>
+  <pre><code>double calculate(Object shape) {
+    if (shape instanceof Circle c) {
+        return Math.PI * c.radius() * c.radius();
+    } else if (shape instanceof Rectangle r) {
+        return r.width() * r.height();
+    } else if (shape instanceof Triangle t) {
+        return 0.5 * t.base() * t.height();
+    }
+    throw new IllegalArgumentException("Unknown shape");
+}</code></pre>
+
+  <div class="interview-tip"><strong>💡 Scope:</strong> The bound variable (<code>s</code>, <code>c</code>) is scoped to the block where the pattern matches — not available in the else branch. Java 21 extends this to switch expressions (see Q11).</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q8 -->
+<div class="q-card" id="q8">
+  <span class="q-num">Q 08</span>
+  <div class="q-title">Sealed Classes</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java17">Java17</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Sealed classes restrict which classes can extend or implement them — gives you a closed type hierarchy that the compiler can reason about exhaustively.</p>
+
+  <pre><code>// Sealed class — only permitted subtypes can extend
+public sealed class Shape permits Circle, Rectangle, Triangle {}
+
+public final class Circle    extends Shape { double radius; }
+public final class Rectangle extends Shape { double width, height; }
+public non-sealed class Triangle extends Shape { }  // open again</code></pre>
+
+  <div class="sh">Three permitted modifiers on subclass</div>
+  <table class="data-table">
+    <tr><th>Modifier</th><th>Meaning</th></tr>
+    <tr><td><code>final</code></td><td>Cannot be extended further</td></tr>
+    <tr><td><code>sealed</code></td><td>Further restricted — must declare its own permits</td></tr>
+    <tr><td><code>non-sealed</code></td><td>Opens the hierarchy back up — anyone can extend</td></tr>
+  </table>
+
+  <div class="sh">Why Sealed Classes? — Exhaustive pattern matching</div>
+  <pre><code>// Compiler knows ALL possible subtypes → enforces exhaustiveness
+double area = switch (shape) {
+    case Circle c    -> Math.PI * c.radius() * c.radius();
+    case Rectangle r -> r.width() * r.height();
+    case Triangle t  -> 0.5 * t.base() * t.height();
+    // No default needed — compiler verifies all cases covered
+};</code></pre>
+
+  <div class="sh">Real-world Use Cases</div>
+  <ul class="point-list">
+    <li><span class="pl-icon">💰</span><div>Payment types: <code>sealed interface Payment permits CreditCard, BankTransfer, Crypto</code></div></li>
+    <li><span class="pl-icon">📨</span><div>API responses: <code>sealed interface Result permits Success, Failure, Pending</code></div></li>
+    <li><span class="pl-icon">🔄</span><div>State machines: model fixed set of states with compile-time exhaustiveness</div></li>
+  </ul>
+
+  <div class="interview-tip"><strong>💡 Key relationship:</strong> Sealed classes + Pattern matching switch + Records = Java's answer to algebraic data types (like Scala case classes or Kotlin sealed classes). Together they enable safe, exhaustive domain modeling.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q9 -->
+<div class="q-card" id="q9">
+  <span class="q-num">Q 09</span>
+  <div class="q-title">Virtual Threads — Project Loom</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java21">Java21</span>
+    <span class="q-tag tag-concurrency">Concurrency</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Virtual threads are lightweight threads managed by the JVM (not OS). Millions can run concurrently — solving the thread-per-request scalability problem without reactive programming.</p>
+
+  <div class="sh">Platform Thread vs Virtual Thread</div>
+  <div class="flow"><span class="hl">Platform Thread (old):</span>
+  Java Thread → OS Thread (1:1 mapping)
+  Stack: ~1MB per thread
+  Context switch: expensive (OS kernel)
+  Practical limit: ~thousands
+
+<span class="ok">Virtual Thread (Java 21):</span>
+  Java VThread → Carrier Thread (M:N mapping)
+  Stack: tiny (grows dynamically, starts at ~KB)
+  Context switch: JVM-managed (cheap)
+  Practical limit: <span class="ok">millions</span></div>
+
+  <div class="sh">Creating Virtual Threads</div>
+  <pre><code>// 1. Direct creation
+Thread vt = Thread.ofVirtual().start(() -> System.out.println("Hello"));
+
+// 2. Via executor (recommended for server apps)
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    for (int i = 0; i < 1_000_000; i++) {
+        executor.submit(() -> {
+            Thread.sleep(Duration.ofSeconds(1)); // blocks without wasting OS thread
+            return "done";
+        });
+    }
+}
+
+// 3. Spring Boot 3.2+ — enable with one property
+spring.threads.virtual.enabled=true</code></pre>
+
+  <div class="sh">Key Behaviour — Blocking is OK</div>
+  <pre><code>// With platform threads — blocking wastes OS thread
+// With virtual threads — JVM unmounts virtual thread from carrier,
+// carrier thread is free to run other virtual threads
+
+// This is fine with virtual threads:
+String result = httpClient.send(request, bodyHandler).body(); // blocking I/O
+Files.readString(path);  // blocking file I/O
+Thread.sleep(1000);      // blocking sleep</code></pre>
+
+  <div class="sh">When to Use</div>
+  <table class="data-table">
+    <tr><th>Good fit ✅</th><th>Not a fit ❌</th></tr>
+    <tr><td>High-concurrency I/O-bound work (REST, DB calls)</td><td>CPU-intensive computation</td></tr>
+    <tr><td>Thread-per-request server model</td><td>Already reactive (WebFlux)</td></tr>
+    <tr><td>Replacing thread pool with simple blocking code</td><td>Pinning (synchronized blocks hold carrier)</td></tr>
+  </table>
+
+  <div class="interview-tip"><strong>💡 Spring Boot 3.2+:</strong> Set <code>spring.threads.virtual.enabled=true</code> — all request handling moves to virtual threads instantly. This is the main reason to upgrade to Java 21 for server-side apps.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q10 -->
+<div class="q-card" id="q10">
+  <span class="q-num">Q 10</span>
+  <div class="q-title">Sequenced Collections</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java21">Java21</span>
+    <span class="q-tag tag-collections">Collections</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Java 21 added three new interfaces to give a uniform API for collections that have a defined encounter order.</p>
+
+  <div class="flow"><span class="hl">SequencedCollection</span>  extends Collection
+  ├── <span class="ok">addFirst(e)</span>, <span class="ok">addLast(e)</span>
+  ├── <span class="ok">getFirst()</span>, <span class="ok">getLast()</span>
+  ├── <span class="ok">removeFirst()</span>, <span class="ok">removeLast()</span>
+  └── <span class="ok">reversed()</span>  ← returns reversed view
+
+<span class="hl">SequencedMap</span>  extends Map
+  ├── <span class="ok">firstEntry()</span>, <span class="ok">lastEntry()</span>
+  ├── <span class="ok">putFirst(k,v)</span>, <span class="ok">putLast(k,v)</span>
+  └── <span class="ok">sequencedKeySet()</span>, <span class="ok">sequencedValues()</span></div>
+
+  <pre><code>// Before Java 21 — no uniform way to get first/last
+list.get(0);                          // List
+deque.peekFirst();                    // Deque
+linkedHashMap.entrySet().iterator().next(); // LinkedHashMap
+
+// Java 21 — uniform API
+list.getFirst();
+deque.getFirst();
+linkedHashMap.firstEntry();</code></pre>
+
+  <div class="interview-tip"><strong>💡 Why it matters:</strong> Before Java 21, there was no common interface for "ordered collections with defined first/last". Different types had different methods. Sequenced Collections fixes this inconsistency.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q11 -->
+<div class="q-card" id="q11">
+  <span class="q-num">Q 11</span>
+  <div class="q-title">Pattern Matching for Switch</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-java21">Java21</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">Extends switch to match on types, not just values. Combined with sealed classes for exhaustive, null-safe dispatch.</p>
+
+  <pre><code>// Java 21 — type patterns in switch
+static String describe(Object obj) {
+    return switch (obj) {
+        case Integer i  -> "Integer: " + i;
+        case String s   -> "String of length " + s.length();
+        case null       -> "null value";
+        default         -> "Other: " + obj.getClass().getName();
+    };
+}
+
+// Guarded patterns — add conditions with 'when'
+static String classify(Object obj) {
+    return switch (obj) {
+        case Integer i when i > 0  -> "Positive integer";
+        case Integer i when i < 0  -> "Negative integer";
+        case Integer i             -> "Zero";
+        case String s  when s.isBlank() -> "Blank string";
+        case String s               -> "String: " + s;
+        default                     -> "Other";
+    };
+}</code></pre>
+
+  <div class="sh">With Sealed Classes — no default needed</div>
+  <pre><code>sealed interface Shape permits Circle, Rectangle {}
+record Circle(double r) implements Shape {}
+record Rectangle(double w, double h) implements Shape {}
+
+double area(Shape s) {
+    return switch (s) {
+        case Circle c    -> Math.PI * c.r() * c.r();
+        case Rectangle r -> r.w() * r.h();
+        // No default — compiler verifies exhaustiveness
+    };
+}</code></pre>
+
+  <div class="interview-tip"><strong>💡 Evolution:</strong> Java 16 added pattern matching to <code>instanceof</code>. Java 21 brings it to <code>switch</code> — enabling concise, type-safe, exhaustive dispatch. This is the culmination of the Amber project.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q12 -->
+<div class="q-card" id="q12">
+  <span class="q-num">Q 12</span>
+  <div class="q-title">Optional API — Best Practices</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;"><code>Optional&lt;T&gt;</code> is a container that may or may not hold a value — designed to eliminate NullPointerExceptions in return types.</p>
+
+  <pre><code>// Creating
+Optional&lt;String&gt; opt = Optional.of("Amit");       // throws NPE if null
+Optional&lt;String&gt; opt = Optional.ofNullable(name); // safe — wraps null
+Optional&lt;String&gt; opt = Optional.empty();
+
+// Extracting
+opt.get()                  // throws NoSuchElementException if empty — avoid!
+opt.orElse("default")      // return default if empty
+opt.orElseGet(() -> compute()) // lazy default — only computed if empty
+opt.orElseThrow()          // throws NoSuchElementException (Java 10+)
+opt.orElseThrow(CustomEx::new)
+
+// Transforming
+opt.map(String::toUpperCase)          // transform if present
+opt.flatMap(s -> findByName(s))       // for methods returning Optional
+opt.filter(s -> s.length() > 3)       // filter on condition
+
+// Java 11
+opt.isEmpty()   // opposite of isPresent()</code></pre>
+
+  <div class="sh">Do's and Don'ts</div>
+  <table class="data-table">
+    <tr><th>✅ Do</th><th>❌ Don't</th></tr>
+    <tr><td>Use as return type of methods</td><td>Use as method parameter</td></tr>
+    <tr><td>Use orElse / orElseGet / orElseThrow</td><td>Use get() without isPresent() check</td></tr>
+    <tr><td>Chain with map/flatMap/filter</td><td>Use Optional as class field</td></tr>
+    <tr><td>Use in stream pipeline</td><td>Use Optional&lt;Collection&gt; — return empty collection instead</td></tr>
+  </table>
+
+  <div class="interview-tip"><strong>💡 orElse vs orElseGet:</strong> <code>orElse(createDefault())</code> — <code>createDefault()</code> is ALWAYS called even if value is present. <code>orElseGet(() -> createDefault())</code> — only called if empty. Use <code>orElseGet</code> for expensive operations.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q13 -->
+<div class="q-card" id="q13">
+  <span class="q-num">Q 13</span>
+  <div class="q-title">Stream API Enhancements (Java 9–16)</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-collections">Collections</span>
+  </div>
+
+  <table class="data-table">
+    <tr><th>Method</th><th>Version</th><th>Description</th></tr>
+    <tr><td><code>takeWhile(predicate)</code></td><td>Java 9</td><td>Take elements while predicate true, stop at first false</td></tr>
+    <tr><td><code>dropWhile(predicate)</code></td><td>Java 9</td><td>Skip elements while predicate true, take rest</td></tr>
+    <tr><td><code>iterate(seed, hasNext, next)</code></td><td>Java 9</td><td>Finite stream iteration (like for loop)</td></tr>
+    <tr><td><code>ofNullable(t)</code></td><td>Java 9</td><td>Stream of 0 or 1 element (null → empty stream)</td></tr>
+    <tr><td><code>toList()</code></td><td>Java 16</td><td>Terminal op → unmodifiable List (shorter than Collectors.toList())</td></tr>
+  </table>
+
+  <pre><code>// takeWhile — stops at first element that fails
+List&lt;Integer&gt; result = Stream.of(1, 2, 3, 4, 5, 1, 2)
+    .takeWhile(n -> n < 4)
+    .toList();  // [1, 2, 3]
+
+// dropWhile
+List&lt;Integer&gt; result = Stream.of(1, 2, 3, 4, 5)
+    .dropWhile(n -> n < 3)
+    .toList();  // [3, 4, 5]
+
+// iterate — finite (Java 9)
+Stream.iterate(0, n -> n < 10, n -> n + 2)
+    .forEach(System.out::println); // 0, 2, 4, 6, 8
+
+// toList() — Java 16 shorthand
+List&lt;String&gt; names = people.stream()
+    .map(Person::name)
+    .filter(n -> !n.isBlank())
+    .toList(); // unmodifiable</code></pre>
+
+  <div class="interview-tip"><strong>💡 toList() vs collect(Collectors.toList()):</strong> <code>toList()</code> (Java 16) returns an <strong>unmodifiable</strong> list. <code>Collectors.toList()</code> returns a modifiable list. Choose based on whether you need to modify the result.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ Q14 -->
+<div class="q-card" id="q14">
+  <span class="q-num">Q 14</span>
+  <div class="q-title">What is a Stream and what easiness does it provide over conventional loops?</div>
+  <div class="q-tags">
+    <span class="q-tag tag-java">Java</span>
+    <span class="q-tag tag-collections">Collections</span>
+  </div>
+
+  <p style="font-size:0.93em;margin-bottom:14px;">A Stream is a <strong>pipeline for processing sequences of elements</strong> — describes <em>what</em> to do, not <em>how</em> to iterate. Does not store data; processes it on demand.</p>
+
+  <div class="flow"><span class="dim">Data Source</span> → <span class="hl">[ filter → map → sorted ]</span> → <span class="ok">Result</span>
+                      Stream Pipeline (lazy — nothing runs until terminal op)</div>
+
+  <div class="sh">Same Problem — Loop vs Stream</div>
+  <p style="font-size:0.88em;color:#64748b;margin-bottom:8px;">Get names of active employees earning &gt; 50000, sorted alphabetically.</p>
+  <pre><code>// Conventional loop
+List&lt;String&gt; result = new ArrayList&lt;&gt;();
+for (Employee emp : employees) {
+    if (emp.isActive() &amp;&amp; emp.getSalary() &gt; 50000) {
+        result.add(emp.getName());
+    }
+}
+Collections.sort(result);
+
+// Stream
+List&lt;String&gt; result = employees.stream()
+    .filter(Employee::isActive)
+    .filter(emp -&gt; emp.getSalary() &gt; 50000)
+    .map(Employee::getName)
+    .sorted()
+    .toList();</code></pre>
+
+  <div class="sh">What Easiness Streams Provide</div>
+
+  <div class="sh" style="font-size:0.9em;">1. Readability — Declarative (WHAT, not HOW)</div>
+  <pre><code>// Loop — describes HOW (init, condition, increment, temp list)
+for (int i = 0; i &lt; list.size(); i++) {
+    if (list.get(i) &gt; 10) result.add(list.get(i) * 2);
+}
+
+// Stream — describes WHAT
+list.stream().filter(n -&gt; n &gt; 10).map(n -&gt; n * 2).toList();</code></pre>
+
+  <div class="sh" style="font-size:0.9em;">2. Parallelism — One Word Change</div>
+  <pre><code>employees.stream().filter(...).map(...).toList();       // sequential
+employees.parallelStream().filter(...).map(...).toList(); // parallel — splits across CPU cores
+// With loops: need ExecutorService, thread mgmt, result merging</code></pre>
+
+  <div class="sh" style="font-size:0.9em;">3. Lazy Evaluation — Stops When Possible</div>
+  <pre><code>// Does NOT process all 1 million elements — stops at first match
+Optional&lt;Employee&gt; found = employees.stream()
+    .filter(emp -&gt; emp.getSalary() &gt; 100000)
+    .findFirst();  // short-circuits automatically</code></pre>
+
+  <div class="sh" style="font-size:0.9em;">4. Built-in Aggregation — No Manual Loops</div>
+  <pre><code>// Sum, average
+int total = employees.stream().mapToInt(Employee::getSalary).sum();
+OptionalDouble avg = employees.stream().mapToDouble(Employee::getSalary).average();
+
+// Group by department
+Map&lt;String, List&lt;Employee&gt;&gt; byDept = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment));
+
+// Count per department
+Map&lt;String, Long&gt; countByDept = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment, Collectors.counting()));</code></pre>
+
+  <div class="sh">Stream Pipeline Structure</div>
+  <div class="flow"><span class="hl">Source</span>          <span class="warn">Intermediate (lazy)</span>               <span class="ok">Terminal (triggers execution)</span>
+──────────      ──────────────────────────     ─────────────────────────
+list.stream() → filter() → map() → sorted() → collect() / toList() / count()
+                                               forEach() / findFirst() / reduce()</div>
+
+  <div class="sh">When to Use Loop vs Stream</div>
+  <table class="data-table">
+    <tr><th>Use Loop</th><th>Use Stream</th></tr>
+    <tr><td>Need to modify external state</td><td>Pure transformation / aggregation</td></tr>
+    <tr><td>Complex multi-step logic with state</td><td>Filter / map / collect pipelines</td></tr>
+    <tr><td>Need element index</td><td>Declarative data processing</td></tr>
+    <tr><td>Checked exceptions inside loop</td><td>Parallel processing needed</td></tr>
+    <tr><td>Performance-critical tight loops</td><td>Readability is priority</td></tr>
+  </table>
+
+  <div class="interview-tip"><strong>💡 One-liner:</strong> Streams provide a declarative, composable pipeline — eliminating boilerplate iteration, enabling lazy evaluation, and making parallelism trivial. Trade-off: debugging is harder and stateful logic is awkward inside stream operations.</div>
+</div>
+
+</div><!-- /container -->
+
+<div class="site-footer">
+  Java Interview Prep · Amit Rakhaiya · Ahmedabad, India
+</div>
+</body>
+</html>

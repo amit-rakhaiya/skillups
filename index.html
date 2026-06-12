@@ -179,6 +179,7 @@
     background: var(--tile-bg); color: var(--tile-color);
   }
   /* tile colors */
+  .tile-java    { --tile-color:#1d4ed8; --tile-bg:#dbeafe; border-top-color:#1d4ed8; }
   .tile-spring  { --tile-color:#6db33f; --tile-bg:#f0fdf4; border-top-color:#6db33f; }
   .tile-kafka   { --tile-color:#c53030; --tile-bg:#fff5f5; border-top-color:#c53030; }
   .tile-ms      { --tile-color:#4299e1; --tile-bg:#ebf8ff; border-top-color:#4299e1; }
@@ -231,6 +232,7 @@
   <a href="index.html" class="nav-brand">⚡ Amit's Interview Prep</a>
   <ul class="nav-links">
     <li><a href="index.html" class="active">🏠 Home</a></li>
+    <li><a href="java-interview-questions.html">☕ Java</a></li>
     <li><a href="spring-boot-interview.html">🌱 Spring Boot</a></li>
     <li><a href="apache-kafka-interview.html">📨 Kafka</a></li>
     <li><a href="microservices-interview.html">🔧 Microservices</a></li>
@@ -292,6 +294,12 @@
   <!-- TOPIC TILES -->
   <div class="section-title">📚 Interview Topics</div>
   <div class="tiles-grid">
+    <a href="java-interview-questions.html" class="tile tile-java">
+      <span class="tile-icon">☕</span>
+      <div class="tile-name">Java 11–21</div>
+      <div class="tile-count">Records, Virtual Threads, Sealed Classes, Pattern Matching, Collections</div>
+      <span class="tile-tag">Core Java</span>
+    </a>
     <a href="spring-boot-interview.html" class="tile tile-spring">
       <span class="tile-icon">🌱</span>
       <div class="tile-name">Spring Boot</div>
@@ -376,6 +384,27 @@
 <script>
 // ── SEARCH DATA ─────────────────────────────────────────────────────────
 const searchData = [
+  // Java
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"What is var — Local Variable Type Inference?", snippet:"var lets compiler infer local variable type. Statically typed, introduced Java 10." },
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"String API enhancements in Java 11?", snippet:"isBlank(), strip(), lines(), repeat(), Files.readString/writeString." },
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"What are Records in Java 16?", snippet:"Immutable data carriers — auto-generates constructor, getters, equals, hashCode, toString." },
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"What are Virtual Threads (Java 21)?", snippet:"JVM-managed lightweight threads. Millions can run concurrently — no reactive programming needed." },
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"What are Sealed Classes (Java 17)?", snippet:"Restrict which classes can extend — enables exhaustive pattern matching at compile time." },
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"Switch Expressions in Java 14?", snippet:"Switch returns a value, arrow syntax eliminates fall-through, compiler enforces exhaustiveness." },
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"Pattern Matching instanceof (Java 16)?", snippet:"Eliminates cast-after-instanceof — binds variable directly in the pattern check." },
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"What are Sequenced Collections (Java 21)?", snippet:"Uniform API for ordered collections — getFirst(), getLast(), reversed()." },
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"Optional API best practices?", snippet:"Use orElseGet over orElse for expensive defaults. Never use as method parameter or class field." },
+  { topic:"Java", color:"#1d4ed8", bg:"#dbeafe", url:"java-interview-questions.html",
+    q:"Stream API enhancements — takeWhile, dropWhile, toList?", snippet:"Java 9 added takeWhile/dropWhile. Java 16 added toList() returning unmodifiable list." },
   // Spring Boot
   { topic:"Spring Boot", color:"#6db33f", bg:"#f0fdf4", url:"spring-boot-interview.html",
     q:"What is Spring Boot auto-configuration?", snippet:"Spring Boot auto-configures beans based on classpath and properties." },

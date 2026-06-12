@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
+                  xmlns:modeler="http://camunda.org/schema/modeler/1.0"
+                  id="Definitions_1"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="Camunda Web Modeler"
+                  exporterVersion="1.0">
+
+  <bpmn:process id="order_processing" name="Order Processing" isExecutable="true">
+
+    <!-- ═══════════════════════════ START ═══════════════════════════ -->
+    <bpmn:startEvent id="StartEvent_1" name="Order Received">
+      <bpmn:outgoing>Flow_start_validate</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- ═══════════════ STEP 1: Validate Order ═══════════════ -->
+    <bpmn:serviceTask id="Task_ValidateOrder" name="Validate Order">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="validate-order" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_start_validate</bpmn:incoming>
+      <bpmn:outgoing>Flow_validate_gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- XOR: Is order valid? -->
+    <bpmn:exclusiveGateway id="GW_OrderValid" name="Order Valid?">
+      <bpmn:incoming>Flow_validate_gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_valid_parallel</bpmn:outgoing>
+      <bpmn:outgoing>Flow_invalid_end</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- ═══════════ STEP 2: Parallel — Payment + Inventory ═══════════ -->
+    <bpmn:parallelGateway id="GW_ParallelSplit" name="Process in Parallel">
+      <bpmn:incoming>Flow_valid_parallel</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_payment</bpmn:outgoing>
+      <bpmn:outgoing>Flow_to_inventory</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <!-- PAYMENT TASK with Compensation Boundary -->
+    <bpmn:serviceTask id="Task_ProcessPayment" name="Process Payment">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="process-payment" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_payment</bpmn:incoming>
+      <bpmn:outgoing>Flow_payment_done</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:boundaryEvent id="Boundary_CompensatePayment" attachedToRef="Task_ProcessPayment"
+                        cancelActivity="false">
+      <bpmn:compensateEventDefinition id="CompensateEventDef_Payment" />
+    </bpmn:boundaryEvent>
+
+    <bpmn:serviceTask id="Task_RefundPayment" name="Refund Payment" isForCompensation="true">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="refund-payment" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <!-- INVENTORY TASK with Compensation Boundary -->
+    <bpmn:serviceTask id="Task_CheckInventory" name="Check Inventory">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="check-inventory" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_to_inventory</bpmn:incoming>
+      <bpmn:outgoing>Flow_inventory_done</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:boundaryEvent id="Boundary_CompensateInventory" attachedToRef="Task_CheckInventory"
+                        cancelActivity="false">
+      <bpmn:compensateEventDefinition id="CompensateEventDef_Inventory" />
+    </bpmn:boundaryEvent>
+
+    <bpmn:serviceTask id="Task_ReleaseInventory" name="Release Inventory" isForCompensation="true">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="release-inventory" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <!-- ═══════════ AND Join (wait for both) ═══════════ -->
+    <bpmn:parallelGateway id="GW_ParallelJoin" name="Wait for Both">
+      <bpmn:incoming>Flow_payment_done</bpmn:incoming>
+      <bpmn:incoming>Flow_inventory_done</bpmn:incoming>
+      <bpmn:outgoing>Flow_join_xor</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <!-- XOR: Did both payment and inventory succeed? -->
+    <bpmn:exclusiveGateway id="GW_CheckResults" name="Both Succeeded?">
+      <bpmn:incoming>Flow_join_xor</bpmn:incoming>
+      <bpmn:outgoing>Flow_success_ship</bpmn:outgoing>
+      <bpmn:outgoing>Flow_failure_compensate</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- ═══════════ STEP 3: Ship Order ═══════════ -->
+    <bpmn:serviceTask id="Task_ShipOrder" name="Ship Order">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="ship-order" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_success_ship</bpmn:incoming>
+      <bpmn:outgoing>Flow_ship_complete</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- ═══════════ SUCCESS END ═══════════ -->
+    <bpmn:endEvent id="EndEvent_Success" name="Order Completed">
+      <bpmn:incoming>Flow_ship_complete</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEvent_Success" />
+    </bpmn:endEvent>
+
+    <!-- ═══════════ COMPENSATION THROW (triggers handlers) ═══════════ -->
+    <bpmn:intermediateThrowEvent id="Event_Compensate" name="Compensate">
+      <bpmn:incoming>Flow_failure_compensate</bpmn:incoming>
+      <bpmn:outgoing>Flow_compensate_end</bpmn:outgoing>
+      <bpmn:compensateEventDefinition id="CompensateEventDef_Throw" />
+    </bpmn:intermediateThrowEvent>
+
+    <!-- ═══════════ FAILURE END ═══════════ -->
+    <bpmn:endEvent id="EndEvent_Failed" name="Order Failed">
+      <bpmn:incoming>Flow_compensate_end</bpmn:incoming>
+      <bpmn:incoming>Flow_invalid_end</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- ═══════════════════ ASSOCIATION: boundary → handler ═══════════════════ -->
+    <bpmn:association id="Assoc_CompensatePayment"
+                      sourceRef="Boundary_CompensatePayment"
+                      targetRef="Task_RefundPayment"
+                      associationDirection="One" />
+
+    <bpmn:association id="Assoc_CompensateInventory"
+                      sourceRef="Boundary_CompensateInventory"
+                      targetRef="Task_ReleaseInventory"
+                      associationDirection="One" />
+
+    <!-- ═══════════════════ SEQUENCE FLOWS ═══════════════════ -->
+    <bpmn:sequenceFlow id="Flow_start_validate"   sourceRef="StartEvent_1"       targetRef="Task_ValidateOrder" />
+    <bpmn:sequenceFlow id="Flow_validate_gateway" sourceRef="Task_ValidateOrder"  targetRef="GW_OrderValid" />
+
+    <bpmn:sequenceFlow id="Flow_valid_parallel" sourceRef="GW_OrderValid" targetRef="GW_ParallelSplit">
+      <bpmn:conditionExpression>=orderValid</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_invalid_end" sourceRef="GW_OrderValid" targetRef="EndEvent_Failed">
+      <bpmn:conditionExpression>=not(orderValid)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_to_payment"   sourceRef="GW_ParallelSplit" targetRef="Task_ProcessPayment" />
+    <bpmn:sequenceFlow id="Flow_to_inventory" sourceRef="GW_ParallelSplit" targetRef="Task_CheckInventory" />
+
+    <bpmn:sequenceFlow id="Flow_payment_done"   sourceRef="Task_ProcessPayment" targetRef="GW_ParallelJoin" />
+    <bpmn:sequenceFlow id="Flow_inventory_done" sourceRef="Task_CheckInventory" targetRef="GW_ParallelJoin" />
+
+    <bpmn:sequenceFlow id="Flow_join_xor" sourceRef="GW_ParallelJoin" targetRef="GW_CheckResults" />
+
+    <bpmn:sequenceFlow id="Flow_success_ship" sourceRef="GW_CheckResults" targetRef="Task_ShipOrder">
+      <bpmn:conditionExpression>=paymentSuccess and inventoryReserved</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_failure_compensate" sourceRef="GW_CheckResults" targetRef="Event_Compensate">
+      <bpmn:conditionExpression>=not(paymentSuccess) or not(inventoryReserved)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_ship_complete"    sourceRef="Task_ShipOrder"    targetRef="EndEvent_Success" />
+    <bpmn:sequenceFlow id="Flow_compensate_end"   sourceRef="Event_Compensate"  targetRef="EndEvent_Failed" />
+
+  </bpmn:process>
+
+</bpmn:definitions>

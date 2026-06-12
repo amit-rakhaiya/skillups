@@ -1,0 +1,53 @@
+{
+  "components": [
+    {
+      "label": "Product Name",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0e00dj5",
+        "columns": null
+      },
+      "id": "Field_0pfigzw",
+      "key": "textfield_iqgntm"
+    },
+    {
+      "label": "Price",
+      "type": "number",
+      "layout": {
+        "row": "Row_1jjcdxl",
+        "columns": null
+      },
+      "id": "Field_0arvt45",
+      "key": "number_sl84e5"
+    },
+    {
+      "label": "Qantity",
+      "type": "number",
+      "layout": {
+        "row": "Row_02zjnnf",
+        "columns": null
+      },
+      "id": "Field_1ho3o70",
+      "key": "number_ijzdn"
+    },
+    {
+      "label": "Description",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_05xl3tu",
+        "columns": null
+      },
+      "id": "Field_0k2twk3",
+      "key": "orderForm"
+    }
+  ],
+  "type": "default",
+  "id": "Form_1150vj3",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}
