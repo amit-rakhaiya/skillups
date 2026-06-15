@@ -1,167 +1,262 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
-                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
-                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
-                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
-                  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
-                  xmlns:modeler="http://camunda.org/schema/modeler/1.0"
-                  id="Definitions_1"
-                  targetNamespace="http://bpmn.io/schema/bpmn"
-                  exporter="Camunda Web Modeler"
-                  exporterVersion="1.0">
-
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
   <bpmn:process id="order_processing" name="Order Processing" isExecutable="true">
-
-    <!-- ═══════════════════════════ START ═══════════════════════════ -->
     <bpmn:startEvent id="StartEvent_1" name="Order Received">
       <bpmn:outgoing>Flow_start_validate</bpmn:outgoing>
     </bpmn:startEvent>
-
-    <!-- ═══════════════ STEP 1: Validate Order ═══════════════ -->
+    <bpmn:sequenceFlow id="Flow_start_validate" sourceRef="StartEvent_1" targetRef="Task_ValidateOrder" />
     <bpmn:serviceTask id="Task_ValidateOrder" name="Validate Order">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="validate-order" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_start_validate</bpmn:incoming>
-      <bpmn:outgoing>Flow_validate_gateway</bpmn:outgoing>
+      <bpmn:outgoing>Flow_validate_gw</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- XOR: Is order valid? -->
+    <bpmn:sequenceFlow id="Flow_validate_gw" sourceRef="Task_ValidateOrder" targetRef="GW_OrderValid" />
     <bpmn:exclusiveGateway id="GW_OrderValid" name="Order Valid?">
-      <bpmn:incoming>Flow_validate_gateway</bpmn:incoming>
-      <bpmn:outgoing>Flow_valid_parallel</bpmn:outgoing>
-      <bpmn:outgoing>Flow_invalid_end</bpmn:outgoing>
+      <bpmn:incoming>Flow_validate_gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_valid_yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_valid_no</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- ═══════════ STEP 2: Parallel — Payment + Inventory ═══════════ -->
-    <bpmn:parallelGateway id="GW_ParallelSplit" name="Process in Parallel">
-      <bpmn:incoming>Flow_valid_parallel</bpmn:incoming>
+    <bpmn:sequenceFlow id="Flow_valid_yes" sourceRef="GW_OrderValid" targetRef="GW_ParallelSplit">
+      <bpmn:conditionExpression>=orderValid</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_valid_no" sourceRef="GW_OrderValid" targetRef="Event_Compensate">
+      <bpmn:conditionExpression>=not(orderValid)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:parallelGateway id="GW_ParallelSplit" name="Parallel Split">
+      <bpmn:incoming>Flow_valid_yes</bpmn:incoming>
       <bpmn:outgoing>Flow_to_payment</bpmn:outgoing>
       <bpmn:outgoing>Flow_to_inventory</bpmn:outgoing>
     </bpmn:parallelGateway>
-
-    <!-- PAYMENT TASK with Compensation Boundary -->
+    <bpmn:sequenceFlow id="Flow_to_payment" sourceRef="GW_ParallelSplit" targetRef="Task_ProcessPayment" />
+    <bpmn:sequenceFlow id="Flow_to_inventory" sourceRef="GW_ParallelSplit" targetRef="Task_CheckInventory" />
     <bpmn:serviceTask id="Task_ProcessPayment" name="Process Payment">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="process-payment" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_to_payment</bpmn:incoming>
-      <bpmn:outgoing>Flow_payment_done</bpmn:outgoing>
+      <bpmn:outgoing>Flow_payment_join</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <bpmn:boundaryEvent id="Boundary_CompensatePayment" attachedToRef="Task_ProcessPayment"
-                        cancelActivity="false">
-      <bpmn:compensateEventDefinition id="CompensateEventDef_Payment" />
-    </bpmn:boundaryEvent>
-
-    <bpmn:serviceTask id="Task_RefundPayment" name="Refund Payment" isForCompensation="true">
-      <bpmn:extensionElements>
-        <zeebe:taskDefinition type="refund-payment" />
-      </bpmn:extensionElements>
-    </bpmn:serviceTask>
-
-    <!-- INVENTORY TASK with Compensation Boundary -->
     <bpmn:serviceTask id="Task_CheckInventory" name="Check Inventory">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="check-inventory" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_to_inventory</bpmn:incoming>
-      <bpmn:outgoing>Flow_inventory_done</bpmn:outgoing>
+      <bpmn:outgoing>Flow_inventory_join</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <bpmn:boundaryEvent id="Boundary_CompensateInventory" attachedToRef="Task_CheckInventory"
-                        cancelActivity="false">
-      <bpmn:compensateEventDefinition id="CompensateEventDef_Inventory" />
-    </bpmn:boundaryEvent>
-
+    <bpmn:sequenceFlow id="Flow_payment_join" sourceRef="Task_ProcessPayment" targetRef="GW_ParallelJoin" />
+    <bpmn:sequenceFlow id="Flow_inventory_join" sourceRef="Task_CheckInventory" targetRef="GW_ParallelJoin" />
+    <bpmn:parallelGateway id="GW_ParallelJoin" name="Wait for Both">
+      <bpmn:incoming>Flow_payment_join</bpmn:incoming>
+      <bpmn:incoming>Flow_inventory_join</bpmn:incoming>
+      <bpmn:outgoing>Flow_join_check</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_join_check" sourceRef="GW_ParallelJoin" targetRef="GW_CheckResults" />
+    <bpmn:exclusiveGateway id="GW_CheckResults" name="Both OK?">
+      <bpmn:incoming>Flow_join_check</bpmn:incoming>
+      <bpmn:outgoing>Flow_success</bpmn:outgoing>
+      <bpmn:outgoing>Flow_failure</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_success" sourceRef="GW_CheckResults" targetRef="Task_ShipOrder">
+      <bpmn:conditionExpression>=paymentSuccess and inventoryReserved</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_failure" sourceRef="GW_CheckResults" targetRef="Event_Compensate">
+      <bpmn:conditionExpression>=not(paymentSuccess) or not(inventoryReserved)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Task_ShipOrder" name="Ship Order">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="ship-order" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_success</bpmn:incoming>
+      <bpmn:outgoing>Flow_ship_end</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_ship_end" sourceRef="Task_ShipOrder" targetRef="EndEvent_Success" />
+    <bpmn:endEvent id="EndEvent_Success" name="Order Completed">
+      <bpmn:incoming>Flow_ship_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateThrowEvent id="Event_Compensate" name="Compensate">
+      <bpmn:incoming>Flow_failure</bpmn:incoming>
+      <bpmn:incoming>Flow_valid_no</bpmn:incoming>
+      <bpmn:outgoing>Flow_13jkfyy</bpmn:outgoing>
+      <bpmn:compensateEventDefinition id="CompDef_Throw" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="EndEvent_Failed" name="Order Failed">
+      <bpmn:incoming>Flow_13jkfyy</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_RefundPayment" name="Refund Payment" isForCompensation="true">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="refund-payment" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
     <bpmn:serviceTask id="Task_ReleaseInventory" name="Release Inventory" isForCompensation="true">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="release-inventory" />
       </bpmn:extensionElements>
     </bpmn:serviceTask>
-
-    <!-- ═══════════ AND Join (wait for both) ═══════════ -->
-    <bpmn:parallelGateway id="GW_ParallelJoin" name="Wait for Both">
-      <bpmn:incoming>Flow_payment_done</bpmn:incoming>
-      <bpmn:incoming>Flow_inventory_done</bpmn:incoming>
-      <bpmn:outgoing>Flow_join_xor</bpmn:outgoing>
-    </bpmn:parallelGateway>
-
-    <!-- XOR: Did both payment and inventory succeed? -->
-    <bpmn:exclusiveGateway id="GW_CheckResults" name="Both Succeeded?">
-      <bpmn:incoming>Flow_join_xor</bpmn:incoming>
-      <bpmn:outgoing>Flow_success_ship</bpmn:outgoing>
-      <bpmn:outgoing>Flow_failure_compensate</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-
-    <!-- ═══════════ STEP 3: Ship Order ═══════════ -->
-    <bpmn:serviceTask id="Task_ShipOrder" name="Ship Order">
-      <bpmn:extensionElements>
-        <zeebe:taskDefinition type="ship-order" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_success_ship</bpmn:incoming>
-      <bpmn:outgoing>Flow_ship_complete</bpmn:outgoing>
-    </bpmn:serviceTask>
-
-    <!-- ═══════════ SUCCESS END ═══════════ -->
-    <bpmn:endEvent id="EndEvent_Success" name="Order Completed">
-      <bpmn:incoming>Flow_ship_complete</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MessageEvent_Success" />
-    </bpmn:endEvent>
-
-    <!-- ═══════════ COMPENSATION THROW (triggers handlers) ═══════════ -->
-    <bpmn:intermediateThrowEvent id="Event_Compensate" name="Compensate">
-      <bpmn:incoming>Flow_failure_compensate</bpmn:incoming>
-      <bpmn:outgoing>Flow_compensate_end</bpmn:outgoing>
-      <bpmn:compensateEventDefinition id="CompensateEventDef_Throw" />
-    </bpmn:intermediateThrowEvent>
-
-    <!-- ═══════════ FAILURE END ═══════════ -->
-    <bpmn:endEvent id="EndEvent_Failed" name="Order Failed">
-      <bpmn:incoming>Flow_compensate_end</bpmn:incoming>
-      <bpmn:incoming>Flow_invalid_end</bpmn:incoming>
-    </bpmn:endEvent>
-
-    <!-- ═══════════════════ ASSOCIATION: boundary → handler ═══════════════════ -->
-    <bpmn:association id="Assoc_CompensatePayment"
-                      sourceRef="Boundary_CompensatePayment"
-                      targetRef="Task_RefundPayment"
-                      associationDirection="One" />
-
-    <bpmn:association id="Assoc_CompensateInventory"
-                      sourceRef="Boundary_CompensateInventory"
-                      targetRef="Task_ReleaseInventory"
-                      associationDirection="One" />
-
-    <!-- ═══════════════════ SEQUENCE FLOWS ═══════════════════ -->
-    <bpmn:sequenceFlow id="Flow_start_validate"   sourceRef="StartEvent_1"       targetRef="Task_ValidateOrder" />
-    <bpmn:sequenceFlow id="Flow_validate_gateway" sourceRef="Task_ValidateOrder"  targetRef="GW_OrderValid" />
-
-    <bpmn:sequenceFlow id="Flow_valid_parallel" sourceRef="GW_OrderValid" targetRef="GW_ParallelSplit">
-      <bpmn:conditionExpression>=orderValid</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_invalid_end" sourceRef="GW_OrderValid" targetRef="EndEvent_Failed">
-      <bpmn:conditionExpression>=not(orderValid)</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow id="Flow_to_payment"   sourceRef="GW_ParallelSplit" targetRef="Task_ProcessPayment" />
-    <bpmn:sequenceFlow id="Flow_to_inventory" sourceRef="GW_ParallelSplit" targetRef="Task_CheckInventory" />
-
-    <bpmn:sequenceFlow id="Flow_payment_done"   sourceRef="Task_ProcessPayment" targetRef="GW_ParallelJoin" />
-    <bpmn:sequenceFlow id="Flow_inventory_done" sourceRef="Task_CheckInventory" targetRef="GW_ParallelJoin" />
-
-    <bpmn:sequenceFlow id="Flow_join_xor" sourceRef="GW_ParallelJoin" targetRef="GW_CheckResults" />
-
-    <bpmn:sequenceFlow id="Flow_success_ship" sourceRef="GW_CheckResults" targetRef="Task_ShipOrder">
-      <bpmn:conditionExpression>=paymentSuccess and inventoryReserved</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_failure_compensate" sourceRef="GW_CheckResults" targetRef="Event_Compensate">
-      <bpmn:conditionExpression>=not(paymentSuccess) or not(inventoryReserved)</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-
-    <bpmn:sequenceFlow id="Flow_ship_complete"    sourceRef="Task_ShipOrder"    targetRef="EndEvent_Success" />
-    <bpmn:sequenceFlow id="Flow_compensate_end"   sourceRef="Event_Compensate"  targetRef="EndEvent_Failed" />
-
+    <bpmn:boundaryEvent id="Boundary_CompPayment" attachedToRef="Task_ProcessPayment">
+      <bpmn:compensateEventDefinition id="CompDef_Payment" />
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Boundary_CompInventory" attachedToRef="Task_CheckInventory">
+      <bpmn:compensateEventDefinition id="CompDef_Inventory" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_13jkfyy" sourceRef="Event_Compensate" targetRef="EndEvent_Failed" />
+    <bpmn:association id="Assoc_Payment" associationDirection="One" sourceRef="Boundary_CompPayment" targetRef="Task_RefundPayment" />
+    <bpmn:association id="Assoc_Inventory" associationDirection="One" sourceRef="Boundary_CompInventory" targetRef="Task_ReleaseInventory" />
   </bpmn:process>
-
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="order_processing">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="131" y="355" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ValidateOrder_di" bpmnElement="Task_ValidateOrder">
+        <dc:Bounds x="240" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_OrderValid_di" bpmnElement="GW_OrderValid" isMarkerVisible="true">
+        <dc:Bounds x="395" y="305" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="389" y="281" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_ParallelSplit_di" bpmnElement="GW_ParallelSplit">
+        <dc:Bounds x="505" y="305" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="499" y="362" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ProcessPayment_di" bpmnElement="Task_ProcessPayment">
+        <dc:Bounds x="620" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckInventory_di" bpmnElement="Task_CheckInventory">
+        <dc:Bounds x="620" y="390" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_ParallelJoin_di" bpmnElement="GW_ParallelJoin">
+        <dc:Bounds x="785" y="305" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="779" y="362" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_CheckResults_di" bpmnElement="GW_CheckResults" isMarkerVisible="true">
+        <dc:Bounds x="895" y="305" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="896" y="281" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ShipOrder_di" bpmnElement="Task_ShipOrder">
+        <dc:Bounds x="1010" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Success_di" bpmnElement="EndEvent_Success">
+        <dc:Bounds x="1172" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1148" y="355" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RefundPayment_di" bpmnElement="Task_RefundPayment">
+        <dc:Bounds x="670" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_Compensate_di" bpmnElement="Event_Compensate">
+        <dc:Bounds x="902" y="491" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="889" y="534" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Failed_di" bpmnElement="EndEvent_Failed">
+        <dc:Bounds x="1172" y="491" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1159" y="534" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReleaseInventory_di" bpmnElement="Task_ReleaseInventory">
+        <dc:Bounds x="652" y="530" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Assoc_Payment_di" bpmnElement="Assoc_Payment">
+        <di:waypoint x="720" y="202" />
+        <di:waypoint x="720" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Inventory_di" bpmnElement="Assoc_Inventory">
+        <di:waypoint x="702" y="488" />
+        <di:waypoint x="702" y="530" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Boundary_CompInventory_di" bpmnElement="Boundary_CompInventory">
+        <dc:Bounds x="684" y="452" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Boundary_CompPayment_di" bpmnElement="Boundary_CompPayment">
+        <dc:Bounds x="702" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_start_validate_di" bpmnElement="Flow_start_validate">
+        <di:waypoint x="188" y="330" />
+        <di:waypoint x="240" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_validate_gw_di" bpmnElement="Flow_validate_gw">
+        <di:waypoint x="340" y="330" />
+        <di:waypoint x="395" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_valid_yes_di" bpmnElement="Flow_valid_yes">
+        <di:waypoint x="445" y="330" />
+        <di:waypoint x="505" y="330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="464" y="192" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_valid_no_di" bpmnElement="Flow_valid_no">
+        <di:waypoint x="420" y="355" />
+        <di:waypoint x="420" y="509" />
+        <di:waypoint x="902" y="509" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="426" y="270" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_payment_di" bpmnElement="Flow_to_payment">
+        <di:waypoint x="530" y="305" />
+        <di:waypoint x="530" y="260" />
+        <di:waypoint x="620" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_inventory_di" bpmnElement="Flow_to_inventory">
+        <di:waypoint x="530" y="355" />
+        <di:waypoint x="530" y="430" />
+        <di:waypoint x="620" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_payment_join_di" bpmnElement="Flow_payment_join">
+        <di:waypoint x="720" y="260" />
+        <di:waypoint x="810" y="260" />
+        <di:waypoint x="810" y="305" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_inventory_join_di" bpmnElement="Flow_inventory_join">
+        <di:waypoint x="720" y="430" />
+        <di:waypoint x="810" y="430" />
+        <di:waypoint x="810" y="355" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_join_check_di" bpmnElement="Flow_join_check">
+        <di:waypoint x="835" y="330" />
+        <di:waypoint x="895" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_success_di" bpmnElement="Flow_success">
+        <di:waypoint x="945" y="330" />
+        <di:waypoint x="1010" y="330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="960" y="192" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_failure_di" bpmnElement="Flow_failure">
+        <di:waypoint x="920" y="355" />
+        <di:waypoint x="920" y="491" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="928" y="270" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ship_end_di" bpmnElement="Flow_ship_end">
+        <di:waypoint x="1110" y="330" />
+        <di:waypoint x="1172" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13jkfyy_di" bpmnElement="Flow_13jkfyy">
+        <di:waypoint x="938" y="509" />
+        <di:waypoint x="1172" y="509" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
 </bpmn:definitions>

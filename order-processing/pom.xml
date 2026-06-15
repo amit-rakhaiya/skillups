@@ -56,19 +56,6 @@
                 <version>${camunda.version}</version>
             </dependency>
 
-            <!-- Kafka -->
-            <dependency>
-                <groupId>org.springframework.kafka</groupId>
-                <artifactId>spring-kafka</artifactId>
-            </dependency>
-
-            <!-- H2 (each service gets own in-memory DB) -->
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <scope>runtime</scope>
-            </dependency>
-
             <!-- Lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
