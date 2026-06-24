@@ -2568,7 +2568,54 @@ spec:
       </div>
     </div>
   </div>
+	<div class="question-card" id="q26">
+    <span class="q-number">QUESTION 26</span>
+    <div class="q-title">🔹 What is coupling and cohesion?</div>
 
+    <p style="font-size:0.93em;margin-bottom:14px;">
+      In distributed architectures and system engineering, **coupling** and **cohesion** are the fundamental design metrics used to score system modularity. High cohesion and loose coupling represent the gold standard for robust system design.
+    </p>
+
+    <div class="sh">1. Coupling (Inter-Module Dependency)</div>
+    
+    <div class="quote-box">
+      <strong>Coupling</strong> tracks the degree of interdependence between separate services or modules. High coupling creates fragile, interconnected environments where a small change inside one service triggers cascading breaking changes across others.
+    </div>
+    <ul class="point-list">
+      <li><span class="pl-icon">⛓️</span><div><strong>Loose Coupling:</strong> Services interact solely through thin, versioned public API contracts (such as REST, gRPC, or asynchronous event topics via Kafka) without leaking internal database layouts or functional details. Loose coupling is a mandatory requirement for achieving true <strong>independent deployability</strong>.</div></li>
+    </ul>
+
+    <div class="sh">2. Cohesion (Intra-Module Structural Focus)</div>
+    <div class="quote-box">
+      <strong>Cohesion</strong> measures how strongly focused the internal responsibilities within a single service boundary are. Low cohesion creates messy "God Objects" or bloated modules that try to execute unrelated business tasks.
+    </div>
+    <ul class="point-list">
+      <li><span class="pl-icon">🎯</span><div><strong>High Cohesion:</strong> Every software component contained inside the service boundary is tightly unified around a single business capability. This aligns directly with the **Single Responsibility Principle (SRP)** and maps perfectly to the concept of a **Bounded Context** in Domain-Driven Design (DDD).</div></li>
+    </ul>
+
+    <div class="interview-tip"><strong>💡 Architectural Principle:</strong> Cohesion and coupling act as complementary forces. Over-partitioning a system into fragmented, micro-scoped components drives up inter-service network coupling. Group elements that change for identical business reasons together (**High Cohesion**), separate elements that evolve for different reasons, and force them to interact across clear, contract-guaranteed boundaries (**Loose Coupling**).</div>
+  </div>
+
+  <div class="question-card" id="q27">
+    <span class="q-number">QUESTION 27</span>
+    <div class="q-title">🔹 Spring Security: How JWT Authentication Works (Stateless Architecture)</div>
+
+    <p style="font-size:0.93em;margin-bottom:14px;">
+      <strong>JSON Web Token (JWT)</strong> is an open standard (RFC 7519) that establishes a compact, self-contained way to securely transmit identity information across systems as a cryptographically signed JSON payload. It is optimized for stateless distributed systems.
+    </p>
+
+    <div class="sh">🔄 Request and Propagation Lifecycle</div>
+    
+    <ol class="point-list" style="list-style: decimal; padding-left: 20px;">
+      <li><strong>Authentication Challenge:</strong> The user calls an explicit login endpoint with credentials. The identity server validates the request and constructs a JSON payload containing specific <strong>Claims</strong> (user metadata, expiries, assigned authorization scopes).</li>
+      <li><strong>Cryptographic Signing:</strong> The identity server calculates a cryptographic signature using a private key (RSA/ECDSA asymmetric layout). This prevents malicious tampering with scopes or fields on the client side.</li>
+      <li><strong>Token Transfer:</strong> The signed string token is sent back to the client, which attaches it to all subsequent requests inside the HTTP header: <code>Authorization: Bearer &lt;token&gt;</code>.</li>
+      <li><strong>Edge Validation:</strong> The request hits your <strong>Spring Cloud Gateway</strong>. The gateway extracts the token, verifies the cryptographic signature using the public key, confirms the expiration time, and routes it downstream.</li>
+      <li><strong>Stateless Internal Flow:</strong> Internal microservices accept the trusted identity passed by the gateway via flattened headers (e.g., <code>X-User-Id</code>, <code>X-User-Roles</code>) without executing a single session query.</li>
+    </ol>
+
+    <div class="interview-tip"><strong>💡 Why it wins for architects:</strong> Traditional session-based validation requires every single microservice instance to execute a synchronous lookup against a shared database cluster (like Redis) on every single incoming call. JWT eliminates this network tax entirely; identity is verified in-memory using public keys, allowing your microservices to scale horizontally with zero session-lookup overhead.</div>
+  </div>
   <div class="footer">
     🧩 Microservices Interview Prep · 25 Questions · Built for clarity &amp; memory
   </div>

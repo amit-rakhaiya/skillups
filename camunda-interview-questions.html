@@ -1153,7 +1153,32 @@ public void cancelFlight(JobClient client, ActivatedJob job) {
 
   <div class="interview-tip"><strong>💡 One-liner:</strong> The Compensation Throw Event is the trigger — placed on the failure path. The engine automatically finds all completed tasks with compensation boundaries in scope and executes their handlers in reverse order. You never invoke the handler directly.</div>
 </div>
+<div class="q-card" id="q31">
+    <span class="q-num">Q 31</span>
+    <div class="q-title">What is Asynchronous Continuation in Camunda (Async Before / Async After)?</div>
+    <div class="q-tags">
+      <span class="q-tag">Camunda Platform</span>
+      <span class="q-tag">Zeebe</span>
+      <span class="q-tag">Flow Control</span>
+    </div>
 
+    <p style="font-size:0.93em;margin-bottom:14px;">
+      <strong>Asynchronous Continuation</strong> allows architects to introduce explicit **state savepoints** directly into a process diagram, telling the engine to commit variables to persistent storage and split a single synchronous execution path into separate transaction boundaries.
+    </p>
+
+    <div class="sh">💡 The Core Technical Problem</div>
+    <div class="quote-box">
+      By default, Camunda executes successive activities **synchronously within a single thread** until it encounters a native wait state (like a User Task or Timer). If your process executes four Automated Service Tasks sequentially and task #4 encounters a connection timeout, the engine rolls back the active execution token all the way to the last known database wait state—causing tasks #1, #2, and #3 to **re-execute** on retry.
+    </div>
+
+    <div class="sh">🔄 Async Before vs. Async After Configuration</div>
+    <ul class="point-list">
+      <li><span class="pl-icon">🔷</span><div><strong>asyncBefore = true:</strong> The engine pauses immediately upon hitting the task boundary, commits the current process variables, and pushes an executable job to the Zeebe log. A background worker picks up the job later. If the execution fails, the rollback stops exactly at this task boundary—safeguarding all prior completed tasks from accidental duplication.</div></li>
+      <li><span class="pl-icon">🔶</span><div><strong>asyncAfter = true:</strong> The engine executes the current task logic, then forces a hard state commit immediately after completion before pushing the token into downstream paths. This ensures that the successful execution of an un-rollbackable side effect (like triggering an external bank payout) is permanently recorded before moving forward.</div></li>
+    </ul>
+
+    <div class="interview-tip"><strong>💡 Architectural Application (POC Connection):</strong> In your personal loan orchestration backend, applying <code>asyncBefore</code> to your automated <code>Background Check Worker</code> creates an isolated transaction boundary. If the third-party credit score service drops offline or flags an incident, Zeebe raises an isolated alert. You can fix and retry the background check later without re-running the Eligibility DMN or forcing the applicant to restart their loan application form from scratch.</div>
+  </div>
 </div><!-- /container -->
 
 <div class="site-footer">
